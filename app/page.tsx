@@ -1,39 +1,36 @@
 "use client";
 
-import { useFetch } from "@/hooks/useFetch";
-import { SpotifyAccessTokenResponse } from "@/types/types";
+import { SpotifyAuthorizationCodeResponse } from "@/types/types";
 import axios from "axios";
-import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
+const handleLogin = async () => {
+  window.location.href = "/api/spotify/login";
+};
 
 export default function Home() {
-  // const { data, errors, isFetching, fetchFunction } =
-  //   useFetch<SpotifyAccessTokenResponse>(
-  //     "/api/spotify/access-token",
-  //     "GET",
-  //     null
-  //   );
+  const searchParams = useSearchParams();
+  const anErrorOccurred: boolean = Boolean(searchParams?.get("error"));
 
-  // useEffect(() => {
-  //   fetchFunction();
-  //   const interval = setInterval(fetchFunction, 58 * 60 * 1000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  if (anErrorOccurred) {
+    // show spotify authentication error
+  } else {
+    // check if the state variable received is the same as the sent
+    const spotifyAuthorizationCodeResponse: SpotifyAuthorizationCodeResponse =
+      JSON.parse(localStorage.getItem("spotify-auth-credential")!);
 
-  // useEffect(() => {
-  //   if (data?.access_token) {
-  //     axios
-  //       .get("/api/spotify/user-playlists", {
-  //         headers: {
-  //           Authorization: `Bearer ${data.access_token}`,
-  //         },
-  //       })
-  //       .then((res) => console.log(res.data))
-  //       .catch((err) => console.error(err));
-  //   }
-  // }, [data]);
+    //request access token
+    axios
+      .post("/api/spotify/access-token", spotifyAuthorizationCodeResponse)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  }
 
-  return <></>;
+  return (
+    <>
+      <button className="border p-3 mt-5 ml-5" onClick={handleLogin}>
+        Login With Spotify
+      </button>
+    </>
+  );
 }
