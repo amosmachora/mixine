@@ -2,7 +2,7 @@ import {
   SpotifyAccessTokenResponse,
   SpotifyAuthorizationCodeResponse,
 } from "@/types/types";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
   const params = new URLSearchParams();
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", "http://localhost:3000");
+  params.append("redirect_uri", "http://localhost:3000/spotify-auth");
 
-  const authHeader = Buffer.from(client_id + ":" + client_secret).toString(
+  const authHeader = Buffer.from(`${client_id}:${client_secret}`).toString(
     "base64"
   );
 
@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
     );
     return NextResponse.json(res);
   } catch (error: any) {
+    console.log(error.response.data);
     return NextResponse.error();
   }
 }

@@ -5,7 +5,7 @@ import { uid } from "uid";
 
 const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET() {
   const state = uid(16);
   const scope =
     "user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public";

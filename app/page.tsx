@@ -28,7 +28,7 @@ export default function Home() {
       axios
         .post("/api/spotify/access-token", spotifyAuthorizationCodeResponse)
         .then((res) => console.log(res.data))
-        .catch((err: AxiosError) => console.log(err.cause));
+        .catch((err) => console.log(err));
     }
   }
 
