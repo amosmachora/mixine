@@ -1,7 +1,7 @@
 "use client";
 
 import { SpotifyAuthorizationCodeResponse } from "@/types/types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSearchParams } from "next/navigation";
 
 const handleLogin = async () => {
@@ -16,14 +16,20 @@ export default function Home() {
     // show spotify authentication error
   } else {
     // check if the state variable received is the same as the sent
-    const spotifyAuthorizationCodeResponse: SpotifyAuthorizationCodeResponse =
-      JSON.parse(localStorage.getItem("spotify-auth-credential")!);
+    const savedSpotifyResponse = localStorage.getItem(
+      "spotify-auth-credential"
+    );
 
-    //request access token
-    axios
-      .post("/api/spotify/access-token", spotifyAuthorizationCodeResponse)
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
+    if (savedSpotifyResponse) {
+      const spotifyAuthorizationCodeResponse: SpotifyAuthorizationCodeResponse =
+        JSON.parse(savedSpotifyResponse);
+
+      //request access token
+      axios
+        .post("/api/spotify/access-token", spotifyAuthorizationCodeResponse)
+        .then((res) => console.log(res.data))
+        .catch((err: AxiosError) => console.log(err.cause));
+    }
   }
 
   return (
