@@ -1,7 +1,5 @@
 "use client";
 
-import { SpotifyAuthorizationCodeResponse } from "@/types/types";
-import axios, { AxiosError } from "axios";
 import { useSearchParams } from "next/navigation";
 
 const handleLogin = async () => {
@@ -13,25 +11,8 @@ export default function Home() {
   const anErrorOccurred: boolean = Boolean(searchParams?.get("error"));
 
   if (anErrorOccurred) {
-    // show spotify authentication error
-  } else {
-    // check if the state variable received is the same as the sent
-    const savedSpotifyResponse = localStorage.getItem(
-      "spotify-auth-credential"
-    );
-
-    if (savedSpotifyResponse) {
-      const spotifyAuthorizationCodeResponse: SpotifyAuthorizationCodeResponse =
-        JSON.parse(savedSpotifyResponse);
-
-      //request access token
-      axios
-        .post("/api/spotify/access-token", spotifyAuthorizationCodeResponse)
-        .then((res) => console.log(res.data))
-        .catch((err) => console.log(err));
-    }
+    console.log("An error occurred while trying to log you in!");
   }
-
   return (
     <>
       <button className="border p-3 mt-5 ml-5" onClick={handleLogin}>

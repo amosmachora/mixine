@@ -1,4 +1,4 @@
-export type SpotifyAccessTokenResponse = {
+export type AccessTokenResponse = {
   access_token: string;
   expires_in: number;
   token_type: string;
@@ -6,8 +6,7 @@ export type SpotifyAccessTokenResponse = {
   refresh_token: string;
 };
 
-export type SpotifyAuthorizationCodeResponse = {
+export type AuthorizationCodeResponse = {
   code: string;
-  grant_type: string;
-  redirect_uri: string;
+  state: string;
 };
