@@ -1,7 +1,7 @@
 "use client";
 
 import axios, { AxiosHeaders, AxiosRequestConfig, Method } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function useFetch<T>(
   url: string,
@@ -28,6 +28,11 @@ export function useFetch<T>(
       setIsFetching(false);
     }
   };
+
+  useEffect(() => {
+    fetchFunction();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     isFetching,

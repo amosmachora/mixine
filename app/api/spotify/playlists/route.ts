@@ -2,7 +2,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, res: NextResponse) {
-  const accessToken = req.headers.get("Authorization")?.replace("Bearer ", "");
+  const accessToken: string = req.headers.get("Authorization")!;
   try {
     const response = await axios.get(
       "https://api.spotify.com/v1/me/playlists",
