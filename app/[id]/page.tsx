@@ -1,12 +1,14 @@
 "use client";
 
 import { HorizontalTrack } from "@/components/HorizontalTrack";
+import { PlaylistBanner } from "@/components/PlaylistBanner";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
 import { Playlist, TracksPayload } from "@/types/types";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
+import { VerticalBar } from "./VerticalBar";
 
 const Page = () => {
   const pathname = usePathname();
@@ -26,27 +28,20 @@ const Page = () => {
     }
   );
 
-  console.log(data);
-
   return playlist ? (
-    <div>
-      <div className="flex items-end">
-        <Image
-          src={playlistImage!.url}
-          alt={playlist.name}
-          height={playlistImage!.height ?? 640}
-          width={playlistImage!.width ?? 640}
-          className="h-[120px] w-[120px]"
+    <div className="flex">
+      <VerticalBar />
+      <div className="flex-1">
+        <PlaylistBanner
+          description={playlist.description}
+          image={playlistImage}
+          name={playlist.name}
         />
-        <div>
-          <p>{playlist.name}</p>
-          {playlist.description && <p>{playlist.description}</p>}
+        <div className="mt-10">
+          {data?.items.map((item, i) => (
+            <HorizontalTrack i={i} item={item} key={item.track.id} />
+          ))}
         </div>
-      </div>
-      <div className="mt-10">
-        {data?.items.map((item, i) => (
-          <HorizontalTrack i={i} item={item} key={item.track.id} />
-        ))}
       </div>
     </div>
   ) : (

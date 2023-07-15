@@ -3,8 +3,9 @@
 import { TrackItem } from "@/types/types";
 import React, { useState } from "react";
 import Image from "next/image";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PlaySection } from "./PlaySection";
 
 export const HorizontalTrack = ({
   item,
@@ -14,6 +15,7 @@ export const HorizontalTrack = ({
   i: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
       className="flex justify-between px-4"
@@ -21,11 +23,11 @@ export const HorizontalTrack = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center w-1/3">
-        {isHovered ? (
-          <FontAwesomeIcon icon={faPlay} className="mr-2 w-4 cursor-pointer" />
-        ) : (
-          <p className="mr-2 w-4">{i + 1}</p>
-        )}
+        <PlaySection
+          isHovered={isHovered}
+          preview_url={item.track.preview_url}
+          songNo={i + 1}
+        />
         <Image
           src={item.track.album.images[0].url}
           height={640}
