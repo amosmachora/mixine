@@ -11,5 +11,5 @@
 }
 
 .show {
-  @apply outline-lime-500 outline;
+  @apply outline-red-500 outline-1 outline-dashed;
 }

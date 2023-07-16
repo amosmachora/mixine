@@ -5,7 +5,7 @@ import React from "react";
 export const VerticalBar = () => {
   const { playlists } = useGlobalData();
   return (
-    <div className="border border-red-500 flex flex-col justify-end h-screen px-4">
+    <div className="show flex flex-col justify-end h-screen px-4">
       {playlists?.map((playlist) => (
         <Image
           src={playlist.images[0].url}

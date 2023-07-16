@@ -64,7 +64,7 @@ export interface Tracks {
 
 export interface TracksPayload {
   href: string;
-  items: TrackItem[];
+  items: Item[];
   limit: number;
   next: null;
   offset: number;
@@ -72,7 +72,7 @@ export interface TracksPayload {
   total: number;
 }
 
-export interface TrackItem {
+export interface Item {
   added_at: Date;
   added_by: AddedBy;
   is_local: boolean;

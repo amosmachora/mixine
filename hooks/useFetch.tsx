@@ -1,6 +1,11 @@
 "use client";
 
-import axios, { AxiosHeaders, AxiosRequestConfig, Method } from "axios";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  AxiosRequestConfig,
+  Method,
+} from "axios";
 import { useEffect, useState } from "react";
 
 export function useFetch<T>(
@@ -10,9 +15,9 @@ export function useFetch<T>(
 ) {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [data, setData] = useState<T | null>(null);
-  const [errors, setErrors] = useState<Error | any>(null);
+  const [errors, setErrors] = useState<AxiosError | any>(null);
 
-  const fetchFunction = async () => {
+  const fetchFunction = async (): Promise<T | null> => {
     setIsFetching(true);
     const options: AxiosRequestConfig<T> = {
       method,
@@ -22,8 +27,10 @@ export function useFetch<T>(
     try {
       const { data } = await axios.request<T>(options);
       setData(data);
+      return data;
     } catch (error) {
       setErrors(error);
+      return null;
     } finally {
       setIsFetching(false);
     }

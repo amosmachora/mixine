@@ -5,10 +5,10 @@ import { PlaylistBanner } from "@/components/PlaylistBanner";
 import { YoutubePlayer } from "@/components/YoutubePlayer";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
-import { Playlist, TracksPayload } from "@/types/types";
+import { Playlist, Item, TracksPayload } from "@/types/types";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VerticalBar } from "./VerticalBar";
 
 const Page = () => {
@@ -27,28 +27,54 @@ const Page = () => {
     }
   );
 
-  const [isPlayingVideos, setIsPlayingVideos] = useState(false);
+  const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
 
-  return playlist ? (
+  const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
+    null
+  );
+
+  useEffect(() => {
+    setCurrentPlayingItem(data?.items[currentPlayingItemIndex]!);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPlayingItemIndex]);
+
+  console.log(currentPlayingItem);
+
+  return (
     <div className="flex">
       <VerticalBar />
-      {isPlayingVideos && <YoutubePlayer tracks={data?.items!} />}
-      <div className="flex-1">
+      {currentPlayingItem && (
+        <YoutubePlayer
+          currentItem={currentPlayingItem}
+          setCurrentPlayingTrackIndex={setCurrentPlayingItemIndex}
+        />
+      )}
+      <div className="flex-1 show h-screen flex flex-col">
         <PlaylistBanner
           description={playlist.description}
           image={playlist.images[0]}
           name={playlist.name}
-          setIsPlayingVideos={setIsPlayingVideos}
+          handleStartPlaying={() => setCurrentPlayingItemIndex(0)}
         />
-        <div className="mt-10">
-          {data?.items.map((item, i) => (
-            <HorizontalTrack i={i} item={item} key={item.track.id} />
-          ))}
-        </div>
+        {isFetching ? (
+          "loading..."
+        ) : errors ? (
+          "An error occurred :("
+        ) : (
+          <div className="mt-10 show flex-1 overflow-auto">
+            {data?.items.map((item, i) => (
+              <HorizontalTrack
+                i={i}
+                item={item}
+                key={i}
+                currentPlayingItem={currentPlayingItem}
+                setCurrentPlayingItem={setCurrentPlayingItem}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
-  ) : (
-    "loading..."
   );
 };
 

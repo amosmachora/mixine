@@ -6,15 +6,15 @@ export const PlaylistBanner = ({
   name,
   image,
   description,
-  setIsPlayingVideos,
+  handleStartPlaying,
 }: {
   name: string;
   description: string | null;
   image: PlaylistImage;
-  setIsPlayingVideos: React.Dispatch<React.SetStateAction<boolean>>;
+  handleStartPlaying: () => void;
 }) => {
   return (
-    <div className="flex items-end">
+    <div className="flex items-end show">
       <Image
         src={image!.url}
         alt={name}
@@ -23,8 +23,8 @@ export const PlaylistBanner = ({
         className="h-[120px] w-[120px]"
       />
       <p
-        className="border-red-500 border py-3 px-3 mx-4 cursor-pointer"
-        onClick={() => setIsPlayingVideos(true)}
+        className="show py-3 px-3 mx-4 cursor-pointer"
+        onClick={handleStartPlaying}
       >
         Play Button
       </p>

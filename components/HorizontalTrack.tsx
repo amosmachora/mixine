@@ -1,28 +1,36 @@
 "use client";
 
-import { TrackItem } from "@/types/types";
+import { Item } from "@/types/types";
 import React, { useState } from "react";
 import Image from "next/image";
-import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PlaySection } from "./PlaySection";
 
 export const HorizontalTrack = ({
   item,
   i,
+  currentPlayingItem,
+  setCurrentPlayingItem,
 }: {
-  item: TrackItem;
+  item: Item;
   i: number;
+  currentPlayingItem: Item | null;
+  setCurrentPlayingItem: React.Dispatch<React.SetStateAction<Item | null>>;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const isCurrentlyPlaying = currentPlayingItem?.track.id === item.track.id;
 
   return (
     <div
-      className="flex justify-between px-4 items-center"
+      className="flex justify-between px-4 items-center cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setCurrentPlayingItem(item)}
     >
-      <div className="flex items-center w-1/3">
+      <div
+        className={`flex items-center ${
+          currentPlayingItem ? "w-1/2" : "w-1/3"
+        } show`}
+      >
         <PlaySection
           isHovered={isHovered}
           preview_url={item.track.preview_url}
@@ -36,7 +44,9 @@ export const HorizontalTrack = ({
           className="w-10 h-10 object-cover mr-5"
         />
         <div>
-          <p>{item.track.name}</p>
+          <p className={`${isCurrentlyPlaying ? "text-green-500" : ""}`}>
+            {item.track.name}
+          </p>
           <div className="flex items-center">
             {item.track.artists.map((artist, index) => (
               <>
@@ -51,8 +61,8 @@ export const HorizontalTrack = ({
           </div>
         </div>
       </div>
-      <p className="w-1/3">{item.track.album.name}</p>
-      <p>{formatDuration(item.track.duration_ms)}</p>
+      <p className="w-1/3 show text-sm truncate">{item.track.album.name}</p>
+      <p className="show">{formatDuration(item.track.duration_ms)}</p>
     </div>
   );
 };

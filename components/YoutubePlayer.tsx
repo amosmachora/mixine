@@ -1,35 +1,62 @@
-import { Track, TrackItem } from "@/types/types";
-import axios from "axios";
+import { useFetch } from "@/hooks/useFetch";
+import { Item } from "@/types/types";
+import { YoutubeSearchResult } from "@/types/youtube";
 import React, { useEffect, useState } from "react";
+import ReactPlayer from "react-player/youtube";
 
 const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
-export const YoutubePlayer = ({ tracks }: { tracks: TrackItem[] }) => {
-  const [currentTrack, setCurrentTrack] = useState<TrackItem>(tracks[0]);
+export const YoutubePlayer = ({
+  currentItem,
+  setCurrentPlayingTrackIndex,
+}: {
+  currentItem: Item;
+  setCurrentPlayingTrackIndex: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+  const params = new URLSearchParams();
 
-  useEffect(() => {
-    const params = new URLSearchParams();
+  const artists = [];
+  for (let i = 0; i < currentItem.track.artists.length; i++) {
+    const artist = currentItem.track.artists[i];
+    artists.push(artist.name);
+  }
 
-    params.append(
-      "q",
-      [currentTrack.track.name, currentTrack.track.artists.join(", ")].join(
-        ", "
-      )
+  params.append("q", [currentItem.track.name, artists.join(", ")].join(", "));
+  const { data, errors, fetchFunction, isFetching } =
+    useFetch<YoutubeSearchResult>(
+      `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${params}&key=${apiKey}`,
+      "GET",
+      null
     );
 
-    getSearchResults(params)
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
-  }, [currentTrack]);
+  const [currentYoutubeVideoId, setCurrentYoutubeVideoId] = useState<
+    string | null
+  >(data?.items[0].id.videoId ?? null);
 
-  return <div className="show w-1/2">YoutubePlayer</div>;
-};
+  useEffect(() => {
+    //TODO save data to avoid refetching
+    fetchFunction().then((data) =>
+      setCurrentYoutubeVideoId(data?.items[0].id.videoId ?? null)
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentItem]);
 
-const getSearchResults = async (urlEncodedQ: URLSearchParams) => {
-  return await axios
-    .get(
-      `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${urlEncodedQ}&key=[${apiKey}]`
-    )
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+  return (
+    <div className="show w-1/2">
+      {isFetching ? (
+        "Loading..."
+      ) : errors ? (
+        "An error occurred :("
+      ) : (
+        <div className="mx-auto">
+          <ReactPlayer
+            url={`https://www.youtube.com/watch?v=${currentYoutubeVideoId}`}
+            onEnded={() => {
+              setCurrentPlayingTrackIndex((prev) => prev + 1);
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
 };

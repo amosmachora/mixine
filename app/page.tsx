@@ -26,7 +26,7 @@ export default function Home() {
         {playlists?.map((playlist) => (
           <div
             key={playlist.id}
-            className="w-1/5 border-red-500 border cursor-pointer"
+            className="w-1/5 show cursor-pointer"
             onClick={() => router.push(`/${playlist.id}`)}
           >
             <Image
