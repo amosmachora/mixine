@@ -1,8 +1,8 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
-const client_secret = process.env.NEXT_PUBLIC_CLIENT_SECRET;
+const client_id = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
+const client_secret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
 
 export async function POST(req: NextRequest) {
   const { code } = await req.json();

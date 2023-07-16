@@ -18,7 +18,7 @@ export const HorizontalTrack = ({
 
   return (
     <div
-      className="flex justify-between px-4"
+      className="flex justify-between px-4 items-center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

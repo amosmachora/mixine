@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import queryString from "query-string";
 import { uid } from "uid";
 
-const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
+const client_id = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
 export async function GET() {
   const state = uid(16);

@@ -70,11 +70,10 @@ export const GlobalDataProvider = ({
             Authorization: accessToken,
           },
         })
-        .then((res) => setPlaylistPayLoad(res.data));
+        .then((res) => setPlaylistPayLoad(res.data))
+        .catch((err) => console.log(err));
     }
   }, [accessToken]);
-
-  useUpdateLogger(playlistPayLoad, "playlistPayload");
 
   return (
     <GlobalData.Provider

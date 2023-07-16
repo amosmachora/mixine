@@ -9,3 +9,7 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
+
+.show {
+  @apply outline-lime-500 outline;
+}

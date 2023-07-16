@@ -17,7 +17,6 @@ export default function Home() {
   if (anErrorOccurred) {
     console.log("An error occurred while trying to log you in!");
   }
-  console.log(playlists);
   return (
     <>
       <button className="border p-3 mt-5 ml-5" onClick={handleLogin}>
