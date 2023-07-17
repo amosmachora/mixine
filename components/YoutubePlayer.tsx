@@ -1,10 +1,13 @@
 import { useFetch } from "@/hooks/useFetch";
-import { Item } from "@/types/types";
-import { YoutubeSearchResult } from "@/types/youtube";
+import { SavedYoutubeId, YoutubeSearchResult } from "@/types/youtube";
 import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/youtube";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
+import { Item } from "@/types/tracks";
+import Image from "next/image";
 
-const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
+const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
 export const YoutubePlayer = ({
   currentItem,
@@ -15,48 +18,84 @@ export const YoutubePlayer = ({
 }) => {
   const params = new URLSearchParams();
 
-  const artists = [];
-  for (let i = 0; i < currentItem.track.artists.length; i++) {
-    const artist = currentItem.track.artists[i];
-    artists.push(artist.name);
-  }
+  const searchQuery: string = [
+    currentItem.track.name,
+    currentItem.track.artists.map((artist) => artist.name).join(", "),
+  ].join(", ");
 
-  params.append("q", [currentItem.track.name, artists.join(", ")].join(", "));
+  params.append("q", searchQuery);
+
   const { data, errors, fetchFunction, isFetching } =
     useFetch<YoutubeSearchResult>(
-      `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${params}&key=${apiKey}`,
+      `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${params}&key=${apiKey}&maxResults=1`,
       "GET",
-      null
+      null,
+      false
     );
 
-  const [currentYoutubeVideoId, setCurrentYoutubeVideoId] = useState<
-    string | null
-  >(data?.items[0].id.videoId ?? null);
+  const [youtubeUrl, setYoutubeUrl] = useState(
+    `https://www.youtube.com/watch?v=${data?.items[0].id.videoId ?? ""}`
+  );
 
   useEffect(() => {
-    //TODO save data to avoid refetching
-    fetchFunction().then((data) =>
-      setCurrentYoutubeVideoId(data?.items[0].id.videoId ?? null)
-    );
+    const init = async () => {
+      const docRef = doc(db, "YoutubeSearchResults", currentItem.track.id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const savedData = docSnap.data();
+        setYoutubeUrl(`https://www.youtube.com/watch?v=${savedData.videoId}`);
+        console.log("Document data:", docSnap.data());
+      } else {
+        console.log("No such document!");
+        fetchFunction().then((data) => {
+          const videoId = data!.items[0].id.videoId;
+          setYoutubeUrl(`https://www.youtube.com/watch?v=${videoId}`);
+          saveSearchResult(currentItem.track.id, {
+            searchQuery,
+            videoId,
+          });
+        });
+      }
+    };
+
+    init();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentItem]);
 
+  console.log(data);
+
   return (
-    <div className="show w-1/2">
+    <div className="show w-1/2 flex flex-col">
       {isFetching ? (
         "Loading..."
       ) : errors ? (
         "An error occurred :("
       ) : (
-        <div className="mx-auto">
+        <div className="mx-auto show">
           <ReactPlayer
-            url={`https://www.youtube.com/watch?v=${currentYoutubeVideoId}`}
+            url={youtubeUrl}
             onEnded={() => {
               setCurrentPlayingTrackIndex((prev) => prev + 1);
             }}
+            controls={true}
+            config={{
+              playerVars: { autoplay: 1 },
+            }}
+            playing
           />
+          <p className="show mt-5">{data?.items[0].snippet.channelTitle}</p>
+          <p className="show">{data?.items[0].snippet.description}</p>
+          <p className="show">{data?.items[0].snippet.title}</p>
         </div>
       )}
     </div>
   );
+};
+
+const saveSearchResult = (id: string, data: SavedYoutubeId) => {
+  setDoc(doc(db, "YoutubeSearchResults", id), data, {
+    merge: true,
+  }).then(() => console.log("Successfully saved the search result"));
 };

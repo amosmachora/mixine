@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["fetchfns", "fortawesome", "scdn", "spotifycdn"]
+  "cSpell.words": [
+    "fetchfns",
+    "firestore",
+    "fortawesome",
+    "mixine",
+    "scdn",
+    "spotifycdn"
+  ]
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { Item } from "@/types/types";
 import React, { useState } from "react";
 import Image from "next/image";
 import { PlaySection } from "./PlaySection";
+import { Item } from "@/types/tracks";
 
 export const HorizontalTrack = ({
   item,
@@ -48,20 +48,26 @@ export const HorizontalTrack = ({
             {item.track.name}
           </p>
           <div className="flex items-center">
-            {item.track.artists.map((artist, index) => (
-              <>
+            {item.track.artists.map((artist, index: number) => (
+              <div className="flex items-center" key={index}>
                 <p key={artist.id} className="text-sm">
                   {artist.name}
                 </p>
                 {index !== item.track.artists.length - 1 && (
                   <span className="mr-1">,</span>
                 )}
-              </>
+              </div>
             ))}
           </div>
         </div>
       </div>
-      <p className="w-1/3 show text-sm truncate">{item.track.album.name}</p>
+      <p
+        className={`show text-sm truncate ${
+          currentPlayingItem ? "w-1/4" : `w-1/3`
+        }`}
+      >
+        {item.track.album.name}
+      </p>
       <p className="show">{formatDuration(item.track.duration_ms)}</p>
     </div>
   );

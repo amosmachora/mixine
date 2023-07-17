@@ -11,7 +11,8 @@ import { useEffect, useState } from "react";
 export function useFetch<T>(
   url: string,
   method: Method,
-  headers: object | null
+  headers: object | null,
+  fetchOnMount: boolean | undefined
 ) {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [data, setData] = useState<T | null>(null);
@@ -37,7 +38,9 @@ export function useFetch<T>(
   };
 
   useEffect(() => {
-    fetchFunction();
+    if (fetchOnMount) {
+      fetchFunction();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

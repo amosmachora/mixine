@@ -9,7 +9,6 @@ import {
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
-import { useUpdateLogger } from "./useUpdateLogger";
 
 const GlobalData = createContext<{
   setAuthorizationCodeResponse: React.Dispatch<
@@ -17,10 +16,14 @@ const GlobalData = createContext<{
   >;
   playlists: Playlist[] | null;
   accessToken: string | null;
+  setPlaylistPayload: React.Dispatch<
+    React.SetStateAction<PlaylistPayload | null>
+  >;
 }>({
   setAuthorizationCodeResponse: () => {},
   playlists: null,
   accessToken: null,
+  setPlaylistPayload: () => {},
 });
 
 export const GlobalDataProvider = ({
@@ -36,7 +39,7 @@ export const GlobalDataProvider = ({
     "accessToken"
   );
 
-  const [playlistPayLoad, setPlaylistPayLoad] =
+  const [playlistPayload, setPlaylistPayload] =
     useState<PlaylistPayload | null>(null);
 
   useEffect(() => {
@@ -62,25 +65,13 @@ export const GlobalDataProvider = ({
     }
   }, [authorizationCodeResponse, setAccessToken]);
 
-  useEffect(() => {
-    if (accessToken) {
-      axios
-        .get("api/spotify/playlists", {
-          headers: {
-            Authorization: accessToken,
-          },
-        })
-        .then((res) => setPlaylistPayLoad(res.data))
-        .catch((err) => console.log(err));
-    }
-  }, [accessToken]);
-
   return (
     <GlobalData.Provider
       value={{
         setAuthorizationCodeResponse,
-        playlists: playlistPayLoad?.items ?? null,
+        playlists: playlistPayload?.items ?? null,
         accessToken,
+        setPlaylistPayload,
       }}
     >
       {children}

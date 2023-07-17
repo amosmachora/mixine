@@ -5,7 +5,8 @@ import { PlaylistBanner } from "@/components/PlaylistBanner";
 import { YoutubePlayer } from "@/components/YoutubePlayer";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
-import { Playlist, Item, TracksPayload } from "@/types/types";
+import { Item, TracksPayload } from "@/types/tracks";
+import { Playlist } from "@/types/types";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -24,7 +25,8 @@ const Page = () => {
     "GET",
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
+    true
   );
 
   const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
@@ -34,11 +36,11 @@ const Page = () => {
   );
 
   useEffect(() => {
-    setCurrentPlayingItem(data?.items[currentPlayingItemIndex]!);
+    if (currentPlayingItemIndex) {
+      setCurrentPlayingItem(data?.items[currentPlayingItemIndex] ?? null);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPlayingItemIndex]);
-
-  console.log(currentPlayingItem);
 
   return (
     <div className="flex">
@@ -54,7 +56,9 @@ const Page = () => {
           description={playlist.description}
           image={playlist.images[0]}
           name={playlist.name}
-          handleStartPlaying={() => setCurrentPlayingItemIndex(0)}
+          handleStartPlaying={() =>
+            setCurrentPlayingItem(data?.items[0] ?? null)
+          }
         />
         {isFetching ? (
           "loading..."
