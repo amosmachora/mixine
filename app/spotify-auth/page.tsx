@@ -1,13 +1,13 @@
 "use client";
 
-import { useGlobalData } from "@/hooks/useGlobalData";
+import { useAuthData } from "@/hooks/useAuthData";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 
 const SpotifyAuthPage = () => {
   const router = useRouter();
   const urlParams = useSearchParams();
-  const { setAuthorizationCodeResponse } = useGlobalData();
+  const { setAuthorizationCodeResponse } = useAuthData();
 
   useEffect(() => {
     const code = urlParams?.get("code");

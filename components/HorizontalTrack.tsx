@@ -4,17 +4,22 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { PlaySection } from "./PlaySection";
 import { Item } from "@/types/tracks";
+import { formatDuration } from "@/util/functions";
 
 export const HorizontalTrack = ({
   item,
   i,
   currentPlayingItem,
-  setCurrentPlayingItem,
+  setCurrentPlayingItemIndex,
+  setIsPlaying,
+  items,
 }: {
+  items: Item[];
   item: Item;
   i: number;
   currentPlayingItem: Item | null;
-  setCurrentPlayingItem: React.Dispatch<React.SetStateAction<Item | null>>;
+  setCurrentPlayingItemIndex: React.Dispatch<React.SetStateAction<number>>;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const isCurrentlyPlaying = currentPlayingItem?.track.id === item.track.id;
@@ -24,7 +29,10 @@ export const HorizontalTrack = ({
       className="flex justify-between px-4 items-center cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => setCurrentPlayingItem(item)}
+      onClick={() => {
+        setCurrentPlayingItemIndex(items.indexOf(item));
+        setIsPlaying(true);
+      }}
     >
       <div
         className={`flex items-center ${
@@ -71,11 +79,4 @@ export const HorizontalTrack = ({
       <p className="show">{formatDuration(item.track.duration_ms)}</p>
     </div>
   );
-};
-
-const formatDuration = (duration_ms: number): string => {
-  const minutes = Math.floor(duration_ms / 60000);
-  const seconds = Math.floor((duration_ms % 60000) / 1000);
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };

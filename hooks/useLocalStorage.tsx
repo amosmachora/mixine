@@ -1,17 +1,16 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 function getDefaultValue<T>(key: string, initialValue: T | null): T | null {
-  if (typeof localStorage !== "undefined") {
-    const storedValue: string | null = localStorage.getItem(key);
-    if (storedValue) {
-      return JSON.parse(storedValue);
-    }
-    if (initialValue instanceof Function) {
-      return initialValue();
-    }
-    return initialValue;
+  const storedValue: string | null = localStorage.getItem(key);
+  if (storedValue) {
+    return JSON.parse(storedValue);
   }
-  return null;
+  if (initialValue instanceof Function) {
+    return initialValue();
+  }
+  return initialValue;
 }
 
 export function useLocalStorage<T>(
@@ -25,8 +24,6 @@ export function useLocalStorage<T>(
   useEffect(() => {
     if (value) {
       localStorage.setItem(key, JSON.stringify(value));
-    } else {
-      localStorage.removeItem(key);
     }
   }, [key, value]);
 

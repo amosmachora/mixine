@@ -12,11 +12,12 @@ export function useFetch<T>(
   url: string,
   method: Method,
   headers: object | null,
-  fetchOnMount: boolean | undefined
-) {
+  fetchOnMount: boolean | undefined,
+  body: object | null
+): [T | null, boolean, AxiosError | null, () => Promise<T | null>] {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [data, setData] = useState<T | null>(null);
-  const [errors, setErrors] = useState<AxiosError | any>(null);
+  const [errors, setErrors] = useState<AxiosError | null>(null);
 
   const fetchFunction = async (): Promise<T | null> => {
     setIsFetching(true);
@@ -26,11 +27,18 @@ export function useFetch<T>(
       headers: headers || {},
     };
     try {
-      const { data } = await axios.request<T>(options);
-      setData(data);
-      return data;
+      if (method === "POST") {
+        // @ts-ignore
+        const { data } = await axios.post(url, body, options);
+        setData(data);
+        return data;
+      } else {
+        const { data } = await axios.request<T>(options);
+        setData(data);
+        return data;
+      }
     } catch (error) {
-      setErrors(error);
+      setErrors(error as AxiosError);
       return null;
     } finally {
       setIsFetching(false);
@@ -44,10 +52,5 @@ export function useFetch<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return {
-    isFetching,
-    data,
-    errors,
-    fetchFunction,
-  };
+  return [data, isFetching, errors, fetchFunction];
 }

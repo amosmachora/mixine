@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { AppProps } from "next/app";
 import { GlobalDataProvider } from "@/hooks/useGlobalData";
+import { AuthDataProvider } from "@/hooks/useAuthData";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <GlobalDataProvider>{children}</GlobalDataProvider>
+        <AuthDataProvider>
+          <GlobalDataProvider>{children}</GlobalDataProvider>
+        </AuthDataProvider>
       </body>
     </html>
   );

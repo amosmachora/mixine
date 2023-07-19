@@ -50,4 +50,7 @@ export interface PageInfo {
 export interface SavedYoutubeId {
   searchQuery: string;
   videoId: string;
+  channelTitle: string;
+  description: string;
+  title: string;
 }

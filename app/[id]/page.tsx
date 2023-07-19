@@ -1,83 +1,152 @@
 "use client";
 
+import { Controls } from "@/components/Controls";
 import { HorizontalTrack } from "@/components/HorizontalTrack";
 import { PlaylistBanner } from "@/components/PlaylistBanner";
 import { YoutubePlayer } from "@/components/YoutubePlayer";
+import { useAuthData } from "@/hooks/useAuthData";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
+import { useUpdateLogger } from "@/hooks/useUpdateLogger";
+import { Playlist } from "@/types/playlists";
 import { Item, TracksPayload } from "@/types/tracks";
-import { Playlist } from "@/types/types";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { VerticalBar } from "./VerticalBar";
 
 const Page = () => {
   const pathname = usePathname();
-  const { playlists, accessToken } = useGlobalData();
+  const { playlists } = useGlobalData();
+  const { accessToken } = useAuthData();
 
   const playlist: Playlist = playlists?.find(
     (playlist) => playlist.id === pathname.replace("/", "")
   )!;
 
-  const { data, errors, isFetching } = useFetch<TracksPayload>(
+  const [tracksPayload, isFetching, errors] = useFetch<TracksPayload>(
     playlist.tracks.href,
     "GET",
     {
       Authorization: `Bearer ${accessToken}`,
     },
-    true
-  );
-
-  const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
-
-  const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
+    true,
     null
   );
 
+  const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
+  const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
+    null
+  );
+  // state of the player
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [shuffle, setShuffle] = useState(false);
+  const [loop, setLoop] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+
   useEffect(() => {
     if (currentPlayingItemIndex) {
-      setCurrentPlayingItem(data?.items[currentPlayingItemIndex] ?? null);
+      setCurrentPlayingItem(
+        tracksPayload?.items[currentPlayingItemIndex] ?? null
+      );
+      setIsPlaying(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPlayingItemIndex]);
 
+  const goToNextSong = () => {
+    if (shuffle) {
+      const randomIndex = Math.floor(
+        Math.random() * tracksPayload!.items.length
+      );
+      setCurrentPlayingItemIndex(randomIndex);
+    } else {
+      setCurrentPlayingItemIndex((prev) => ++prev);
+    }
+  };
+
+  const goToPreviousSong = () => {
+    if (shuffle) {
+      const randomIndex = Math.floor(
+        Math.random() * tracksPayload!.items.length
+      );
+      setCurrentPlayingItemIndex(randomIndex);
+    } else {
+      setCurrentPlayingItemIndex((prev) => --prev);
+    }
+  };
+
+  const handleStartPlaying = () => {
+    if (currentPlayingItem) {
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(true);
+      setCurrentPlayingItem(tracksPayload?.items[0] ?? null);
+    }
+  };
+
+  useUpdateLogger(isPlaying, "isplaying");
   return (
-    <div className="flex">
+    <div className="flex w-screen h-screen overflow-x-hidden relative">
       <VerticalBar />
-      {currentPlayingItem && (
-        <YoutubePlayer
-          currentItem={currentPlayingItem}
-          setCurrentPlayingTrackIndex={setCurrentPlayingItemIndex}
-        />
-      )}
-      <div className="flex-1 show h-screen flex flex-col">
+      {isFetching
+        ? "loading..."
+        : errors
+        ? "An error occurred :("
+        : currentPlayingItem && (
+            <YoutubePlayer
+              currentItem={currentPlayingItem!}
+              setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
+              isPlaying={isPlaying}
+              setIsPlaying={setIsPlaying}
+              shuffle={shuffle}
+              itemsLength={tracksPayload?.items.length!}
+              loop={loop}
+              volume={volume}
+            />
+          )}
+
+      <div className={`show h-screen flex flex-col flex-1`}>
         <PlaylistBanner
           description={playlist.description}
           image={playlist.images[0]}
           name={playlist.name}
-          handleStartPlaying={() =>
-            setCurrentPlayingItem(data?.items[0] ?? null)
-          }
+          handleStartPlaying={handleStartPlaying}
         />
         {isFetching ? (
           "loading..."
         ) : errors ? (
           "An error occurred :("
         ) : (
-          <div className="mt-10 show flex-1 overflow-auto">
-            {data?.items.map((item, i) => (
+          <div className="mt-10 show w-full overflow-auto">
+            {tracksPayload?.items.map((item, i) => (
               <HorizontalTrack
                 i={i}
                 item={item}
                 key={i}
                 currentPlayingItem={currentPlayingItem}
-                setCurrentPlayingItem={setCurrentPlayingItem}
+                setIsPlaying={setIsPlaying}
+                items={tracksPayload.items}
+                setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
               />
             ))}
           </div>
         )}
       </div>
+      <Controls
+        playlist={playlist}
+        item={currentPlayingItem}
+        setIsPlaying={setIsPlaying}
+        isPlaying={isPlaying}
+        goToNextSong={goToNextSong}
+        goToPreviousSong={goToPreviousSong}
+        handleStartPlaying={handleStartPlaying}
+        setShuffle={setShuffle}
+        shuffle={shuffle}
+        loop={loop}
+        volume={volume}
+        setLoop={setLoop}
+        setVolume={setVolume}
+      />
     </div>
   );
 };

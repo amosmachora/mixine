@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Image as PlaylistImage } from "@/types/types";
+import { Image as PlaylistImage } from "@/types/playlists";
 
 export const PlaylistBanner = ({
   name,
