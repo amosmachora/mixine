@@ -3,14 +3,17 @@
 import React, { useEffect, useState } from "react";
 
 function getDefaultValue<T>(key: string, initialValue: T | null): T | null {
-  const storedValue: string | null = localStorage.getItem(key);
-  if (storedValue) {
-    return JSON.parse(storedValue);
+  if (typeof localStorage !== `undefined`) {
+    const storedValue: string | null = localStorage.getItem(key);
+    if (storedValue) {
+      return JSON.parse(storedValue);
+    }
+    if (initialValue instanceof Function) {
+      return initialValue();
+    }
+    return initialValue;
   }
-  if (initialValue instanceof Function) {
-    return initialValue();
-  }
-  return initialValue;
+  return null;
 }
 
 export function useLocalStorage<T>(

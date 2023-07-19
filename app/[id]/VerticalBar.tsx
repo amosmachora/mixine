@@ -10,11 +10,10 @@ export const VerticalBar = () => {
       <p>Logo</p>
       {playlists?.map((playlist) => (
         <Link key={playlist.id} href={playlist.id}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={playlist.images[0].url}
             alt={playlist.name}
-            height={playlist.images[0].height ?? 120}
-            width={playlist.images[0].width ?? 120}
             className="h-12 w-12 cursor-pointer my-3 rounded object-cover mx-auto"
           />
         </Link>

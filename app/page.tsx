@@ -53,7 +53,6 @@ export default function Home() {
     }
 
     if (!currentUser && accessToken !== null) {
-      console.log("Here");
       fetchUser().then((res) => setCurrentUser(res));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,32 +64,45 @@ export default function Home() {
 
   const handleLogOut = () => {
     localStorage.clear();
+    setCurrentUser(null);
   };
 
+  console.log(playListPayload);
   return (
-    <>
-      <div className="flex items-center justify-between">
+    <main className="h-screen w-screen overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/robotman.png"
+        alt="man"
+        className="absolute top-0 bottom-0 right-0 -z-10 h-screen object-cover w-[20vw]"
+      />
+      <div className="flex items-center justify-between px-5 show">
         <p className="show">Logo</p>
-        <div className="flex items-center">
+        <div className="flex items-center show text-white">
           {isFetchingUser ? (
-            "Fetching user..."
+            <p>Fetching user...</p>
           ) : fetchUserError ? (
-            "An error occurred fetching the user"
+            <p> An error occurred fetching the user</p>
           ) : (
-            <div className="show">
-              <p>{currentUser?.display_name}</p>
-              <p>{currentUser?.email}</p>
-              <Image
-                src={currentUser?.images[0].url!}
-                alt={currentUser?.display_name!}
-                height={currentUser?.images[0].height}
-                width={currentUser?.images[0].width}
-              />
-              <p>{currentUser?.followers.total} followers</p>
-            </div>
+            currentUser && (
+              <div className="show text-black">
+                <p>{currentUser?.display_name}</p>
+                <p>{currentUser?.email}</p>
+                <Image
+                  src={currentUser?.images[0].url!}
+                  alt={currentUser?.display_name!}
+                  height={currentUser?.images[0].height}
+                  width={currentUser?.images[0].width}
+                />
+                <p>{currentUser?.followers.total} followers</p>
+              </div>
+            )
           )}
+          <a className="p-3" href="https://github.com/amosmachora/mixine">
+            ⭐ On Github
+          </a>
           <button
-            className="border p-3 mt-5 ml-5 show"
+            className="p-3 show"
             onClick={currentUser ? handleLogOut : handleLogin}
           >
             {currentUser ? "Log out" : "Login With Spotify"}
@@ -122,6 +134,11 @@ export default function Home() {
               </div>
             ))}
       </div>
-    </>
+      {!playListPayload && (
+        <div>
+          So imagine Youtube and Spotify had a baby.. How would it look like?
+        </div>
+      )}
+    </main>
   );
 }

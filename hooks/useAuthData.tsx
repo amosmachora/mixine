@@ -35,38 +35,33 @@ export const AuthDataProvider = ({
     LocalStorageKeys.refreshToken
   );
 
-  const [firstTimeAccessToken, , , fetchAccessTokenFirstTime] =
-    useFetch<AccessTokenResponse>(
-      "/api/spotify/access-token",
-      "POST",
-      null,
-      false,
-      authorizationCodeResponse
-    );
+  const [, , , fetchAccessTokenFirstTime] = useFetch<AccessTokenResponse>(
+    "/api/spotify/access-token",
+    "POST",
+    null,
+    false,
+    authorizationCodeResponse
+  );
 
-  const [refreshTokenResponse, , , fetchRefreshToken] =
-    useFetch<RefreshTokenResponse>(
-      "/api/spotify/refresh-token",
-      "POST",
-      null,
-      false,
-      {
-        refresh_token: refreshToken,
-      }
-    );
+  const [, , , fetchRefreshToken] = useFetch<RefreshTokenResponse>(
+    "/api/spotify/refresh-token",
+    "POST",
+    null,
+    false,
+    {
+      refresh_token: refreshToken,
+    }
+  );
 
   useEffect(() => {
     if (authorizationCodeResponse) {
-      fetchAccessTokenFirstTime();
+      fetchAccessTokenFirstTime().then((res) => {
+        setAccessToken(res?.access_token!);
+        setRefreshToken(res?.refresh_token!);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authorizationCodeResponse]);
-
-  useEffect(() => {
-    setAccessToken(firstTimeAccessToken?.access_token ?? null);
-    setRefreshToken(firstTimeAccessToken?.refresh_token ?? null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstTimeAccessToken]);
 
   useEffect(() => {
     if (refreshToken) {
@@ -75,13 +70,14 @@ export const AuthDataProvider = ({
     const id = setInterval(() => {
       console.log("Refreshed");
       fetchRefreshToken().then((res) => setAccessToken(res?.access_token!));
-    }, 55 * 60 * 1000);
+    }, 3600 * 1000);
 
-    return clearInterval(id);
+    return () => {
+      clearInterval(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useUpdateLogger(accessToken, "access-token");
   return (
     <AuthData.Provider
       value={{

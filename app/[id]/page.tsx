@@ -83,8 +83,6 @@ const Page = () => {
       setCurrentPlayingItem(tracksPayload?.items[0] ?? null);
     }
   };
-
-  useUpdateLogger(isPlaying, "isplaying");
   return (
     <div className="flex w-screen h-screen overflow-x-hidden relative">
       <VerticalBar />
