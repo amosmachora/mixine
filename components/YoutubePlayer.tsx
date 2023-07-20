@@ -37,13 +37,14 @@ export const YoutubePlayer = ({
 
   params.append("q", searchQuery);
 
-  const [, isFetching, errors, fetchFunction] = useFetch<YoutubeSearchResult>(
-    `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${params}&key=${apiKey}&maxResults=1`,
-    "GET",
-    null,
-    false,
-    null
-  );
+  const [, isFetching, errors, fetchFunction] = useFetch<YoutubeSearchResult>({
+    body: null,
+    fetchOnMount: false,
+    headers: null,
+    method: "GET",
+    saveAble: true,
+    url: `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${params}&key=${apiKey}&maxResults=1`,
+  });
 
   const [savedYoutubeInfo, setSavedYoutubeInfo] =
     useState<SavedYoutubeId | null>(null);

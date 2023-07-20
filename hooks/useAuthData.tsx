@@ -35,23 +35,25 @@ export const AuthDataProvider = ({
     LocalStorageKeys.refreshToken
   );
 
-  const [, , , fetchAccessTokenFirstTime] = useFetch<AccessTokenResponse>(
-    "/api/spotify/access-token",
-    "POST",
-    null,
-    false,
-    authorizationCodeResponse
-  );
+  const [, , , fetchAccessTokenFirstTime] = useFetch<AccessTokenResponse>({
+    body: authorizationCodeResponse,
+    fetchOnMount: false,
+    headers: null,
+    method: "POST",
+    saveAble: false,
+    url: "/api/spotify/access-token",
+  });
 
-  const [, , , fetchRefreshToken] = useFetch<RefreshTokenResponse>(
-    "/api/spotify/refresh-token",
-    "POST",
-    null,
-    false,
-    {
+  const [, , , fetchRefreshToken] = useFetch<RefreshTokenResponse>({
+    url: "/api/spotify/refresh-token",
+    method: "POST",
+    body: {
       refresh_token: refreshToken,
-    }
-  );
+    },
+    fetchOnMount: false,
+    headers: null,
+    saveAble: false,
+  });
 
   useEffect(() => {
     if (authorizationCodeResponse) {

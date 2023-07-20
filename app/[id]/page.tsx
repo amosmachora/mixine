@@ -15,23 +15,20 @@ import React, { useEffect, useState } from "react";
 import { VerticalBar } from "./VerticalBar";
 
 const Page = () => {
-  const pathname = usePathname();
-  const { playlists } = useGlobalData();
+  const { currentPlaylist } = useGlobalData();
   const { accessToken } = useAuthData();
 
-  const playlist: Playlist = playlists?.find(
-    (playlist) => playlist.id === pathname.replace("/", "")
-  )!;
-
-  const [tracksPayload, isFetching, errors] = useFetch<TracksPayload>(
-    playlist.tracks.href,
-    "GET",
-    {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    true,
-    null
-  );
+  const [tracksPayload, isFetching, errors, fetchTracks] =
+    useFetch<TracksPayload>({
+      body: null,
+      fetchOnMount: true,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      method: "GET",
+      saveAble: true,
+      url: currentPlaylist?.tracks.href ?? "",
+    });
 
   const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
   const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
@@ -105,9 +102,9 @@ const Page = () => {
 
       <div className={`show h-screen flex flex-col flex-1`}>
         <PlaylistBanner
-          description={playlist.description}
-          image={playlist.images[0]}
-          name={playlist.name}
+          description={currentPlaylist!.description}
+          image={currentPlaylist!.images[0]}
+          name={currentPlaylist!.name}
           handleStartPlaying={handleStartPlaying}
         />
         {isFetching ? (
@@ -131,7 +128,7 @@ const Page = () => {
         )}
       </div>
       <Controls
-        playlist={playlist}
+        playlist={currentPlaylist!}
         item={currentPlayingItem}
         setIsPlaying={setIsPlaying}
         isPlaying={isPlaying}

@@ -18,8 +18,8 @@ export const PlaylistBanner = ({
       <Image
         src={image!.url}
         alt={name}
-        height={image!.height ?? 640}
-        width={image!.width ?? 640}
+        height={640}
+        width={640}
         className="h-[120px] w-[120px]"
       />
       <p

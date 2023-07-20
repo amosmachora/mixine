@@ -67,16 +67,16 @@ export const Controls = ({
         {item ? (
           <Image
             src={item?.track.album.images[0].url}
-            height={item?.track.album.images[0].height!}
-            width={item?.track.album.images[0].width!}
+            height={640}
+            width={640}
             alt={item?.track.name!}
             className="h-10 w-10"
           />
         ) : (
           <Image
             src={playlist.images[0].url!}
-            height={playlist.images[0].height!}
-            width={playlist.images[0].width!}
+            height={640}
+            width={640}
             alt={playlist?.name!}
             className="h-10 w-10"
           />

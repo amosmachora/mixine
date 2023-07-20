@@ -1,5 +1,6 @@
 "use client";
 
+import { FetchOptions } from "@/types/types";
 import axios, {
   AxiosError,
   AxiosHeaders,
@@ -9,15 +10,12 @@ import axios, {
 import { useEffect, useState } from "react";
 
 export function useFetch<T>(
-  url: string,
-  method: Method,
-  headers: object | null,
-  fetchOnMount: boolean | undefined,
-  body: object | null
+  fetchOptions: FetchOptions
 ): [T | null, boolean, AxiosError | null, () => Promise<T | null>] {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [data, setData] = useState<T | null>(null);
   const [errors, setErrors] = useState<AxiosError | null>(null);
+  const { method, url, headers, body, fetchOnMount, saveAble } = fetchOptions;
 
   const fetchFunction = async (): Promise<T | null> => {
     setIsFetching(true);
@@ -27,15 +25,24 @@ export function useFetch<T>(
       headers: headers || {},
     };
     try {
-      if (method === "POST") {
-        // @ts-ignore
-        const { data } = await axios.post(url, body, options);
-        setData(data);
-        return data;
+      const storedData = localStorage.getItem(url);
+      if (storedData && saveAble) {
+        const parsed: T = JSON.parse(storedData);
+        setData(parsed);
+        return parsed;
       } else {
-        const { data } = await axios.request<T>(options);
-        setData(data);
-        return data;
+        if (method === "POST") {
+          // @ts-ignore
+          const { data } = await axios.post(url, body, options);
+          setData(data);
+          localStorage.setItem(url, JSON.stringify(data));
+          return data;
+        } else {
+          const { data } = await axios.request<T>(options);
+          setData(data);
+          localStorage.setItem(url, JSON.stringify(data));
+          return data;
+        }
       }
     } catch (error) {
       setErrors(error as AxiosError);

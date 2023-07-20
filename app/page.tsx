@@ -1,9 +1,11 @@
 "use client";
 
+import { PlaylistTab } from "@/components/PlaylistTab";
 import { useAuthData } from "@/hooks/useAuthData";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { FeaturedPlaylists } from "@/types/featuredplaylists";
 import { PlaylistPayload } from "@/types/playlists";
 import { User } from "@/types/types";
 import { LocalStorageKeys } from "@/util/Constants";
@@ -22,25 +24,43 @@ export default function Home() {
   const { accessToken } = useAuthData();
 
   const [playListPayload, isFetching, errors, fetchPlaylists] =
-    useFetch<PlaylistPayload>(
-      "api/spotify/playlists",
-      "GET",
-      {
-        Authorization: accessToken,
+    useFetch<PlaylistPayload>({
+      body: null,
+      fetchOnMount: false,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
-      false,
-      null
-    );
-  const [, isFetchingUser, fetchUserError, fetchUser] = useFetch<User>(
-    "https://api.spotify.com/v1/me",
-    "GET",
-    {
+      method: "GET",
+      saveAble: true,
+      url: "https://api.spotify.com/v1/me/playlists",
+    });
+
+  const [, isFetchingUser, fetchUserError, fetchUser] = useFetch<User>({
+    url: "https://api.spotify.com/v1/me",
+    method: "GET",
+    headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-    false,
-    null
-  );
-  const router = useRouter();
+    body: null,
+    fetchOnMount: false,
+    saveAble: true,
+  });
+
+  const [
+    featuredPlaylists,
+    isFetchingFeaturedPlaylists,
+    featuredPlaylistsError,
+    fetchFeaturedPlaylists,
+  ] = useFetch<FeaturedPlaylists>({
+    url: "https://api.spotify.com/v1/browse/featured-playlists",
+    method: "GET",
+    body: null,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    fetchOnMount: false,
+    saveAble: true,
+  });
 
   const [currentUser, setCurrentUser] = useLocalStorage<User | null>(
     null,
@@ -48,12 +68,18 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (playlists === null && accessToken !== null) {
-      fetchPlaylists().then((res) => setPlaylistPayload(res));
-    }
+    if (accessToken) {
+      if (!playlists) {
+        fetchPlaylists().then((res) => setPlaylistPayload(res));
+      }
 
-    if (!currentUser && accessToken !== null) {
-      fetchUser().then((res) => setCurrentUser(res));
+      if (!currentUser) {
+        fetchUser().then((res) => setCurrentUser(res));
+      }
+
+      if (!featuredPlaylists) {
+        fetchFeaturedPlaylists();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
@@ -67,9 +93,9 @@ export default function Home() {
     setCurrentUser(null);
   };
 
-  console.log(playListPayload);
+  console.log(errors);
   return (
-    <main className="h-screen w-screen overflow-hidden">
+    <main className="w-screen overflow-x-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/robotman.png"
@@ -109,32 +135,33 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <div className="flex flex-wrap mt-5">
-        {isFetching
-          ? "Loading..."
-          : errors
-          ? "An error occurred!"
-          : playListPayload?.items.map((playlist) => (
-              <div
-                key={playlist.id}
-                className="w-1/5 show cursor-pointer"
-                onClick={() => router.push(`/${playlist.id}`)}
-              >
-                <Image
-                  src={playlist.images[0].url}
-                  alt="playlist image"
-                  width={120}
-                  height={120}
-                  className="mx-auto"
-                />
-                <p className="text-center">{playlist.name}</p>
-                {playlist.description && (
-                  <p className="text-center text-sm">{playlist.description}</p>
-                )}
+      <p>Good Afternoon {currentUser?.display_name} </p>
+      {isFetching
+        ? "Loading..."
+        : errors
+        ? "An error occurred!"
+        : playListPayload && (
+            <div className="flex flex-wrap mt-5">
+              {playListPayload?.items.map((playlist) => (
+                <PlaylistTab playlist={playlist} key={playlist.id} />
+              ))}
+            </div>
+          )}
+      {isFetchingFeaturedPlaylists
+        ? "Loading..."
+        : featuredPlaylistsError
+        ? "An Error occurred"
+        : featuredPlaylists && (
+            <div className="show">
+              <p>{featuredPlaylists.message}</p>
+              <div className="flex flex-wrap mt-5">
+                {featuredPlaylists?.playlists.items.map((playlist) => (
+                  <PlaylistTab playlist={playlist} key={playlist.id} />
+                ))}
               </div>
-            ))}
-      </div>
-      {!playListPayload && (
+            </div>
+          )}
+      {!currentUser && (
         <div>
           So imagine Youtube and Spotify had a baby.. How would it look like?
         </div>

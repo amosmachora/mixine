@@ -8,9 +8,13 @@ const GlobalData = createContext<{
   setPlaylistPayload: React.Dispatch<
     React.SetStateAction<PlaylistPayload | null>
   >;
+  setCurrentPlaylist: React.Dispatch<React.SetStateAction<Playlist | null>>;
+  currentPlaylist: Playlist | null;
 }>({
   playlists: null,
   setPlaylistPayload: () => {},
+  currentPlaylist: null,
+  setCurrentPlaylist: () => {},
 });
 
 export const GlobalDataProvider = ({
@@ -21,11 +25,15 @@ export const GlobalDataProvider = ({
   const [playlistPayload, setPlaylistPayload] =
     useState<PlaylistPayload | null>(null);
 
+  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
+
   return (
     <GlobalData.Provider
       value={{
         playlists: playlistPayload?.items ?? null,
         setPlaylistPayload,
+        currentPlaylist,
+        setCurrentPlaylist,
       }}
     >
       {children}

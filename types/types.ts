@@ -1,3 +1,5 @@
+import { Method } from "axios";
+
 export type AccessTokenResponse = {
   access_token: string;
   expires_in: number;
@@ -51,4 +53,13 @@ export interface Image {
   url: string;
   height: number;
   width: number;
+}
+
+export interface FetchOptions {
+  url: string;
+  method: Method;
+  headers: object | null;
+  fetchOnMount: boolean | undefined;
+  body: object | null;
+  saveAble: boolean;
 }
