@@ -81,38 +81,35 @@ const Page = () => {
     }
   };
   return (
-    <div className="flex w-screen h-screen overflow-x-hidden relative">
-      <VerticalBar />
-      {isFetching
-        ? "loading..."
-        : errors
-        ? "An error occurred :("
-        : currentPlayingItem && (
-            <YoutubePlayer
-              currentItem={currentPlayingItem!}
-              setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
-              isPlaying={isPlaying}
-              setIsPlaying={setIsPlaying}
-              shuffle={shuffle}
-              itemsLength={tracksPayload?.items.length!}
-              loop={loop}
-              volume={volume}
-            />
-          )}
-
-      <div className={`show h-screen flex flex-col flex-1`}>
-        <PlaylistBanner
-          description={currentPlaylist!.description}
-          image={currentPlaylist!.images[0]}
-          name={currentPlaylist!.name}
-          handleStartPlaying={handleStartPlaying}
-        />
-        {isFetching ? (
-          "loading..."
-        ) : errors ? (
-          "An error occurred :("
-        ) : (
-          <div className="mt-10 show w-full overflow-auto">
+    <div className="h-screen">
+      <div className="flex show bg-green-200 h-[88vh]">
+        <VerticalBar />
+        <div className="w-1/2">
+          {isFetching
+            ? "loading..."
+            : errors
+            ? "An error occurred :("
+            : currentPlayingItem && (
+                <YoutubePlayer
+                  currentItem={currentPlayingItem!}
+                  setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                  shuffle={shuffle}
+                  itemsLength={tracksPayload?.items.length!}
+                  loop={loop}
+                  volume={volume}
+                />
+              )}
+        </div>
+        <div className="w-5/12 flex-1 show flex flex-col flex-grow">
+          <PlaylistBanner
+            description={currentPlaylist!.description}
+            image={currentPlaylist!.images[0]}
+            name={currentPlaylist!.name}
+            handleStartPlaying={handleStartPlaying}
+          />
+          <div className="flex-grow overflow-y-scroll">
             {tracksPayload?.items.map((item, i) => (
               <HorizontalTrack
                 i={i}
@@ -125,7 +122,7 @@ const Page = () => {
               />
             ))}
           </div>
-        )}
+        </div>
       </div>
       <Controls
         playlist={currentPlaylist!}

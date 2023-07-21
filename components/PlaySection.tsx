@@ -37,12 +37,12 @@ export const PlaySection = ({
             audio.pause();
             setIsPlaying(false);
           }}
-          className="mr-2 w-4 cursor-pointer"
+          className="mx-2 w-4 cursor-pointer"
         />
       ) : isHovered && !isPlaying ? (
         <FontAwesomeIcon
           icon={faPlay}
-          className="mr-2 w-4 cursor-pointer"
+          className="mx-2 w-4 cursor-pointer"
           onClick={() => {
             if (preview_url) {
               audio.play();
@@ -54,7 +54,7 @@ export const PlaySection = ({
           onMouseLeave={() => setNoPreviewUrlError(false)}
         />
       ) : (
-        <p className="mr-2 w-4">{songNo}</p>
+        <p className="mx-2 w-4">{songNo}</p>
       )}
       {noPreviewUrlError && (
         <p className="absolute top-0 translate-y-full">

@@ -24,9 +24,13 @@ export const HorizontalTrack = ({
   const [isHovered, setIsHovered] = useState(false);
   const isCurrentlyPlaying = currentPlayingItem?.track.id === item.track.id;
 
+  const commaSeparatedArtists = item.track.artists
+    .map((artist) => artist.name)
+    .join(", ");
+
   return (
     <div
-      className="flex justify-between px-4 items-center cursor-pointer"
+      className="flex justify-between items-center cursor-pointer my-3"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
@@ -34,11 +38,7 @@ export const HorizontalTrack = ({
         setIsPlaying(true);
       }}
     >
-      <div
-        className={`flex items-center ${
-          currentPlayingItem ? "w-1/2" : "w-1/3"
-        } show`}
-      >
+      <div className="flex items-center w-1/2">
         <PlaySection
           isHovered={isHovered}
           preview_url={item.track.preview_url}
@@ -51,32 +51,17 @@ export const HorizontalTrack = ({
           alt={item.track.album.name}
           className="w-10 h-10 object-cover mr-5"
         />
-        <div>
-          <p className={`${isCurrentlyPlaying ? "text-green-500" : ""}`}>
+        <div className="w-full">
+          <p
+            className={`text-sm ${isCurrentlyPlaying ? "text-green-500" : ""}`}
+          >
             {item.track.name}
           </p>
-          <div className="flex items-center">
-            {item.track.artists.map((artist, index: number) => (
-              <div className="flex items-center" key={index}>
-                <p key={artist.id} className="text-sm">
-                  {artist.name}
-                </p>
-                {index !== item.track.artists.length - 1 && (
-                  <span className="mr-1">,</span>
-                )}
-              </div>
-            ))}
-          </div>
+          <p className="text-xs">{commaSeparatedArtists}</p>
         </div>
       </div>
-      <p
-        className={`show text-sm truncate ${
-          currentPlayingItem ? "w-1/4" : `w-1/3`
-        }`}
-      >
-        {item.track.album.name}
-      </p>
-      <p className="show">{formatDuration(item.track.duration_ms)}</p>
+      <p className={`text-sm truncate w-1/4`}>{item.track.album.name}</p>
+      <p className="">{formatDuration(item.track.duration_ms)}</p>
     </div>
   );
 };

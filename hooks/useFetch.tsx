@@ -1,12 +1,7 @@
 "use client";
 
 import { FetchOptions } from "@/types/types";
-import axios, {
-  AxiosError,
-  AxiosHeaders,
-  AxiosRequestConfig,
-  Method,
-} from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { useEffect, useState } from "react";
 
 export function useFetch<T>(

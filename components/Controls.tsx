@@ -62,7 +62,7 @@ export const Controls = ({
     setCurrentProgress(0);
   }, [item]);
   return (
-    <div className="absolute bottom-0 left-0 right-0 show flex justify-between py-4 items-center bg-black text-white px-[2%]">
+    <div className="show flex justify-between py-4 items-center bg-black text-white px-[2%] h-[12vh]">
       <div className="flex items-center">
         {item ? (
           <Image

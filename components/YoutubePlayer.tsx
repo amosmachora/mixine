@@ -42,7 +42,7 @@ export const YoutubePlayer = ({
     fetchOnMount: false,
     headers: null,
     method: "GET",
-    saveAble: true,
+    saveAble: false,
     url: `https://youtube.googleapis.com/youtube/v3/search?part=snippet&${params}&key=${apiKey}&maxResults=1`,
   });
 
@@ -82,39 +82,31 @@ export const YoutubePlayer = ({
 
   return (
     <div className="show flex-1 flex flex-col">
-      {isFetching ? (
-        "Loading..."
-      ) : errors ? (
-        "An error occurred :("
-      ) : (
-        <div className="mx-auto show">
-          <ReactPlayer
-            url={`https://www.youtube.com/watch?v=${savedYoutubeInfo?.videoId}`}
-            onEnded={() => {
-              if (shuffle) {
-                const randomIndex = Math.floor(Math.random() * itemsLength);
-                setCurrentPlayingItemIndex(randomIndex);
-              } else {
-                setCurrentPlayingItemIndex((prev) => prev + 1);
-              }
-            }}
-            config={{
-              playerVars: { autoplay: 1 },
-            }}
-            playing={isPlaying}
-            loop={loop}
-            volume={volume}
-            onStart={() => setIsPlaying(true)}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            // width={550}
-            // height={(550 * 9) / 16}
-          />
-          <p className="show mt-5">{savedYoutubeInfo?.channelTitle}</p>
-          <p className="show">{savedYoutubeInfo?.description}</p>
-          <p className="show">{savedYoutubeInfo?.title}</p>
-        </div>
-      )}
+      <ReactPlayer
+        url={`https://www.youtube.com/watch?v=${savedYoutubeInfo?.videoId}`}
+        onEnded={() => {
+          if (shuffle) {
+            const randomIndex = Math.floor(Math.random() * itemsLength);
+            setCurrentPlayingItemIndex(randomIndex);
+          } else {
+            setCurrentPlayingItemIndex((prev) => prev + 1);
+          }
+        }}
+        config={{
+          playerVars: { autoplay: 1 },
+        }}
+        playing={isPlaying}
+        loop={loop}
+        volume={volume}
+        onStart={() => setIsPlaying(true)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+      <div>
+        <p className="show mt-5">{savedYoutubeInfo?.channelTitle}</p>
+        <p className="show">{savedYoutubeInfo?.description}</p>
+        <p className="show">{savedYoutubeInfo?.title}</p>
+      </div>
     </div>
   );
 };
