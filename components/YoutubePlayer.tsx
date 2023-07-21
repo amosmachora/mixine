@@ -81,7 +81,7 @@ export const YoutubePlayer = ({
   }, [currentItem]);
 
   return (
-    <div className="show flex-1 flex flex-col">
+    <div className="show flex-1 flex flex-col items-center">
       <ReactPlayer
         url={`https://www.youtube.com/watch?v=${savedYoutubeInfo?.videoId}`}
         onEnded={() => {

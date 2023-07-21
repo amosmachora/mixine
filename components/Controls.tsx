@@ -83,7 +83,7 @@ export const Controls = ({
         )}
         <div className="ml-4">
           <p className="text-sm">{item?.track.name}</p>
-          <p className="text-xs lowercase">
+          <p className="text-xs">
             {item?.track.artists.map((artist) => artist.name).join(", ")}
           </p>
         </div>
