@@ -13,3 +13,16 @@ export function millisecondsToHours(milliseconds: number): number {
   const hours = milliseconds / (1000 * 60 * 60);
   return hours;
 }
+
+export function getGreeting(): string {
+  const currentTime = new Date();
+  const currentHour = currentTime.getHours();
+
+  if (currentHour >= 0 && currentHour < 12) {
+    return "Good morning";
+  } else if (currentHour >= 12 && currentHour < 18) {
+    return "Good afternoon";
+  } else {
+    return "Good evening";
+  }
+}

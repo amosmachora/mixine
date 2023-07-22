@@ -67,7 +67,7 @@ export const HorizontalTrack = ({
         </div>
       </div>
       <p className={`text-sm truncate w-1/4`}>{item.track.album.name}</p>
-      <p className="">{formatDuration(item.track.duration_ms)}</p>
+      <p className="text-sm">{formatDuration(item.track.duration_ms)}</p>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { Navbar } from "@/components/Navbar";
+import { PlaylistsSkeleton } from "@/components/PlaylistsSkeleton";
 import { PlaylistTab } from "@/components/PlaylistTab";
 import { useAuthData } from "@/hooks/useAuthData";
 import { useFetch } from "@/hooks/useFetch";
@@ -11,6 +12,9 @@ import { FeaturedPlaylists } from "@/types/featuredplaylists";
 import { PlaylistPayload } from "@/types/playlists";
 import { User } from "@/types/types";
 import { LocalStorageKeys } from "@/util/Constants";
+import { getGreeting } from "@/util/functions";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -79,33 +83,46 @@ export default function Home() {
   return (
     <main className="px-5">
       <Navbar setUser={setUser} />
-      <p className="text-3xl mt-5">Good Afternoon {user?.display_name} </p>
-      {isFetching
-        ? "Loading..."
-        : errors
-        ? "An error occurred!"
-        : playListPayload && (
-            <div className="flex flex-wrap mt-5 gap-y-5">
-              {playListPayload?.items.map((playlist) => (
-                <PlaylistTab playlist={playlist} key={playlist.id} />
-              ))}
-            </div>
-          )}
+      {user && (
+        <p className="text-3xl mt-5">
+          {getGreeting()} {user?.display_name}{" "}
+        </p>
+      )}
+
+      {isFetching ? (
+        <PlaylistsSkeleton />
+      ) : (
+        playListPayload && (
+          <div className="flex flex-wrap mt-5 gap-y-5 show">
+            {playListPayload?.items.map((playlist) => (
+              <PlaylistTab playlist={playlist} key={playlist.id} />
+            ))}
+          </div>
+        )
+      )}
 
       <p className="text-3xl mt-5">{featuredPlaylists?.message}</p>
-      {isFetchingFeaturedPlaylists
-        ? "Loading..."
-        : featuredPlaylistsError
-        ? "An Error occurred"
-        : featuredPlaylists && (
-            <div className="show">
-              <div className="flex flex-wrap mt-5 gap-y-5">
-                {featuredPlaylists?.playlists.items.map((playlist) => (
-                  <PlaylistTab playlist={playlist} key={playlist.id} />
-                ))}
-              </div>
-            </div>
-          )}
+      {isFetchingFeaturedPlaylists ? (
+        <PlaylistsSkeleton />
+      ) : (
+        featuredPlaylists && (
+          <div className="flex flex-wrap mt-5 gap-y-5 show">
+            {featuredPlaylists?.playlists.items.map((playlist) => (
+              <PlaylistTab playlist={playlist} key={playlist.id} />
+            ))}
+          </div>
+        )
+      )}
+
+      <a
+        href="https://amosmachora.vercel.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center fixed bottom-5 right-5 bg-gray-900 text-white p-2 hover:p-4 transition-all rounded text-xs italic cursor-pointer"
+      >
+        Meet the dev!
+        <FontAwesomeIcon icon={faHeart} className="text-red-600 mx-2" />
+      </a>
     </main>
   );
 }

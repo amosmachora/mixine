@@ -9,7 +9,7 @@ export const PlaylistTab = ({ playlist }: { playlist: Playlist }) => {
   const router = useRouter();
   return (
     <div
-      className="w-1/6 show cursor-pointer bg-gray-900 text-white p-5 rounded hover:bg-gray-800 transition-colors"
+      className="w-1/2 sm:w-1/6 show cursor-pointer bg-gray-900 text-white p-5 rounded hover:bg-gray-800 transition-colors"
       onClick={() => {
         setCurrentPlaylist(playlist);
         router.push(`/${playlist.id}`);

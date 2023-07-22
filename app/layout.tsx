@@ -1,9 +1,10 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { AppProps } from "next/app";
 import { GlobalDataProvider } from "@/hooks/useGlobalData";
 import { AuthDataProvider } from "@/hooks/useAuthData";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,6 +12,8 @@ export const metadata = {
   title: "Mixine",
   description: "What if YouTube and Spotify had a baby?",
 };
+
+config.autoAddCss = false;
 
 export default function RootLayout({
   children,

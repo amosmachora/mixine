@@ -6,6 +6,8 @@ import { doc, getDoc } from "firebase/firestore";
 import { db, saveSearchResult } from "@/firebase/firebase";
 import { Item } from "@/types/tracks";
 import { PlayerState } from "@/types/types";
+import { Skeleton } from "./ui/skeleton";
+import { YoutubePlayerSkeleton } from "./YoutubePlayerSkeleton";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
@@ -32,7 +34,7 @@ export const YoutubePlayer = ({
 
   params.append("q", searchQuery);
 
-  const [, isFetching, errors, fetchFunction] = useFetch<YoutubeSearchResult>({
+  const [, isFetching, , fetchFunction] = useFetch<YoutubeSearchResult>({
     body: null,
     fetchOnMount: false,
     headers: null,
@@ -77,23 +79,33 @@ export const YoutubePlayer = ({
 
   return (
     <div className="show flex-1 flex flex-col items-center pt-5">
-      <ReactPlayer
-        url={`https://www.youtube.com/watch?v=${savedYoutubeInfo?.videoId}`}
-        onEnded={goToNextSong}
-        config={{
-          playerVars: { autoplay: 1 },
-        }}
-        playing={playerState.isPlaying}
-        {...playerState}
-        onStart={play}
-        onPlay={play}
-        onPause={pause}
-      />
-      <div>
-        <p className="show mt-5">{savedYoutubeInfo?.channelTitle}</p>
-        <p className="show">{savedYoutubeInfo?.description}</p>
-        <p className="show">{savedYoutubeInfo?.title}</p>
-      </div>
+      {isFetching ? (
+        <YoutubePlayerSkeleton />
+      ) : (
+        <>
+          <ReactPlayer
+            url={`https://www.youtube.com/watch?v=${savedYoutubeInfo?.videoId}`}
+            onEnded={goToNextSong}
+            config={{
+              playerVars: { autoplay: 1 },
+            }}
+            playing={playerState.isPlaying}
+            {...playerState}
+            onStart={play}
+            onPlay={play}
+            onPause={pause}
+          />
+          <div className="mx-auto">
+            <p className="show mt-5 font-semibold">{savedYoutubeInfo?.title}</p>
+            <p className="show font-medium mt-6">
+              {savedYoutubeInfo?.channelTitle}
+            </p>
+            <p className="show bg-gray-100 rounded p-2">
+              {savedYoutubeInfo?.description}
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 };

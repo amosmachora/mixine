@@ -104,13 +104,13 @@ export const Controls = ({
           {playerState.isPlaying ? (
             <FontAwesomeIcon
               icon={faCirclePause}
-              className="h-7 cursor-pointer"
+              className="h-10 cursor-pointer"
               onClick={pause}
             />
           ) : (
             <FontAwesomeIcon
               icon={faCirclePlay}
-              className="h-7 cursor-pointer"
+              className="h-10 cursor-pointer"
               onClick={play}
             />
           )}
