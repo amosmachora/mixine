@@ -5,21 +5,22 @@ import Image from "next/image";
 import { PlaySection } from "./PlaySection";
 import { Item } from "@/types/tracks";
 import { formatDuration } from "@/util/functions";
+import { PlayerState } from "@/types/types";
 
 export const HorizontalTrack = ({
   item,
   i,
   currentPlayingItem,
   setCurrentPlayingItemIndex,
-  setIsPlaying,
   items,
+  setPlayerState,
 }: {
   items: Item[];
   item: Item;
   i: number;
   currentPlayingItem: Item | null;
   setCurrentPlayingItemIndex: React.Dispatch<React.SetStateAction<number>>;
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerState>>;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const isCurrentlyPlaying = currentPlayingItem?.track.id === item.track.id;
@@ -35,7 +36,12 @@ export const HorizontalTrack = ({
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
         setCurrentPlayingItemIndex(items.indexOf(item));
-        setIsPlaying(true);
+        setPlayerState((prev) => {
+          return {
+            ...prev,
+            isPlaying: true,
+          };
+        });
       }}
     >
       <div className="flex items-center w-1/2">

@@ -9,7 +9,7 @@ export const PlaylistTab = ({ playlist }: { playlist: Playlist }) => {
   const router = useRouter();
   return (
     <div
-      className="w-1/6 show cursor-pointer bg-gray-900 text-white p-5 mr-5 rounded hover:bg-gray-800 transition-colors"
+      className="w-1/6 show cursor-pointer bg-gray-900 text-white p-5 rounded hover:bg-gray-800 transition-colors"
       onClick={() => {
         setCurrentPlaylist(playlist);
         router.push(`/${playlist.id}`);
@@ -23,7 +23,7 @@ export const PlaylistTab = ({ playlist }: { playlist: Playlist }) => {
       />
       <p className="text-sm my-4">{playlist.name}</p>
       {playlist.description && (
-        <p className="text-xs w-2/3">{playlist.description}</p>
+        <p className="text-xs">{playlist.description}</p>
       )}
     </div>
   );

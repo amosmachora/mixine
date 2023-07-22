@@ -5,27 +5,22 @@ import ReactPlayer from "react-player/youtube";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import { Item } from "@/types/tracks";
+import { PlayerState } from "@/types/types";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
 export const YoutubePlayer = ({
   currentItem,
-  setCurrentPlayingItemIndex,
-  isPlaying,
-  itemsLength,
-  shuffle,
-  loop,
-  volume,
-  setIsPlaying,
+  playerState,
+  play,
+  pause,
+  goToNextSong,
 }: {
   currentItem: Item;
-  setCurrentPlayingItemIndex: React.Dispatch<React.SetStateAction<number>>;
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  isPlaying: boolean;
-  itemsLength: number;
-  shuffle: boolean;
-  loop: boolean;
-  volume: number;
+  playerState: PlayerState;
+  play: () => void;
+  pause: () => void;
+  goToNextSong: () => void;
 }) => {
   const params = new URLSearchParams();
 
@@ -81,26 +76,18 @@ export const YoutubePlayer = ({
   }, [currentItem]);
 
   return (
-    <div className="show flex-1 flex flex-col items-center">
+    <div className="show flex-1 flex flex-col items-center pt-5">
       <ReactPlayer
         url={`https://www.youtube.com/watch?v=${savedYoutubeInfo?.videoId}`}
-        onEnded={() => {
-          if (shuffle) {
-            const randomIndex = Math.floor(Math.random() * itemsLength);
-            setCurrentPlayingItemIndex(randomIndex);
-          } else {
-            setCurrentPlayingItemIndex((prev) => prev + 1);
-          }
-        }}
+        onEnded={goToNextSong}
         config={{
           playerVars: { autoplay: 1 },
         }}
-        playing={isPlaying}
-        loop={loop}
-        volume={volume}
-        onStart={() => setIsPlaying(true)}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        playing={playerState.isPlaying}
+        {...playerState}
+        onStart={play}
+        onPlay={play}
+        onPause={pause}
       />
       <div>
         <p className="show mt-5">{savedYoutubeInfo?.channelTitle}</p>

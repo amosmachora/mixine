@@ -63,3 +63,10 @@ export interface FetchOptions {
   body: object | null;
   saveAble: boolean;
 }
+
+export interface PlayerState {
+  isPlaying: boolean;
+  shuffle: boolean;
+  loop: boolean;
+  volume: number;
+}

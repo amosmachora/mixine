@@ -1,8 +1,10 @@
 "use client";
 
 import { FetchOptions } from "@/types/types";
+import { millisecondsToHours } from "@/util/functions";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { useEffect, useState } from "react";
+import { useGlobalData } from "./useGlobalData";
 
 export function useFetch<T>(
   fetchOptions: FetchOptions
@@ -11,6 +13,7 @@ export function useFetch<T>(
   const [data, setData] = useState<T | null>(null);
   const [errors, setErrors] = useState<AxiosError | null>(null);
   const { method, url, headers, body, fetchOnMount, saveAble } = fetchOptions;
+  const { notify } = useGlobalData();
 
   const fetchFunction = async (): Promise<T | null> => {
     setIsFetching(true);
@@ -20,27 +23,46 @@ export function useFetch<T>(
       headers: headers || {},
     };
     try {
-      const storedData = localStorage.getItem(url);
-      if (storedData && saveAble) {
-        const parsed: T = JSON.parse(storedData);
-        setData(parsed);
-        return parsed;
-      } else {
+      if (!saveAble) {
         if (method === "POST") {
           // @ts-ignore
           const { data } = await axios.post(url, body, options);
           setData(data);
-          localStorage.setItem(url, JSON.stringify(data));
           return data;
         } else {
           const { data } = await axios.request<T>(options);
           setData(data);
-          localStorage.setItem(url, JSON.stringify(data));
           return data;
         }
       }
-    } catch (error) {
+      const saved = localStorage.getItem(url);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const timeDifference =
+          new Date().getTime() - new Date(parsed.savedTime).getTime();
+        const diffInHrs = millisecondsToHours(timeDifference);
+        if (diffInHrs < 2) {
+          setData(parsed.data);
+          return parsed.data;
+        }
+      }
+      if (method === "POST") {
+        // @ts-ignore
+        const { data } = await axios.post(url, body, options);
+        setData(data);
+        const savedTime = new Date();
+        localStorage.setItem(url, JSON.stringify({ savedTime, data }));
+        return data;
+      } else {
+        const { data } = await axios.request<T>(options);
+        setData(data);
+        const savedTime = new Date();
+        localStorage.setItem(url, JSON.stringify({ savedTime, data }));
+        return data;
+      }
+    } catch (error: any) {
       setErrors(error as AxiosError);
+      notify!(error.response.data.message);
       return null;
     } finally {
       setIsFetching(false);

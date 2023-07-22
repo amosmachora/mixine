@@ -2,6 +2,7 @@
 
 import { Playlist, PlaylistPayload } from "@/types/playlists";
 import React, { createContext, useContext, useState } from "react";
+import { toast, Id } from "react-toastify";
 
 const GlobalData = createContext<{
   playlists: Playlist[] | null;
@@ -10,11 +11,13 @@ const GlobalData = createContext<{
   >;
   setCurrentPlaylist: React.Dispatch<React.SetStateAction<Playlist | null>>;
   currentPlaylist: Playlist | null;
+  notify: ((message: string) => Id) | null;
 }>({
   playlists: null,
   setPlaylistPayload: () => {},
   currentPlaylist: null,
   setCurrentPlaylist: () => {},
+  notify: null,
 });
 
 export const GlobalDataProvider = ({
@@ -27,6 +30,8 @@ export const GlobalDataProvider = ({
 
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
 
+  const notify = (message: string) => toast(message);
+
   return (
     <GlobalData.Provider
       value={{
@@ -34,6 +39,7 @@ export const GlobalDataProvider = ({
         setPlaylistPayload,
         currentPlaylist,
         setCurrentPlaylist,
+        notify,
       }}
     >
       {children}

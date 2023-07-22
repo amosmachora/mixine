@@ -1,6 +1,7 @@
 import { useUpdateLogger } from "@/hooks/useUpdateLogger";
 import { Playlist } from "@/types/playlists";
 import { Item, Track } from "@/types/tracks";
+import { PlayerState } from "@/types/types";
 import { formatDuration } from "@/util/functions";
 import {
   faShuffle,
@@ -12,6 +13,7 @@ import {
   faCirclePause,
   faVolumeHigh,
   faVolumeXmark,
+  faPause,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -20,43 +22,33 @@ import React, { useEffect, useState } from "react";
 export const Controls = ({
   playlist,
   item,
-  isPlaying,
-  shuffle,
-  loop,
-  volume,
-  setLoop,
-  setIsPlaying,
+  playerState,
   goToNextSong,
   goToPreviousSong,
-  handleStartPlaying,
-  setShuffle,
-  setVolume,
+  setPlayerState,
+  pause,
+  play,
 }: {
   playlist: Playlist;
   item: Item | null;
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  isPlaying: boolean;
+  playerState: PlayerState;
   goToNextSong: () => void;
   goToPreviousSong: () => void;
-  handleStartPlaying: () => void;
-  setShuffle: React.Dispatch<React.SetStateAction<boolean>>;
-  shuffle: boolean;
-  loop: boolean;
-  volume: number;
-  setLoop: React.Dispatch<React.SetStateAction<boolean>>;
-  setVolume: React.Dispatch<React.SetStateAction<number>>;
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerState>>;
+  play: () => void;
+  pause: () => void;
 }) => {
   const [currentProgress, setCurrentProgress] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => {
-      if (isPlaying) {
+      if (playerState.isPlaying) {
         setCurrentProgress((prev) => prev + 1);
       }
     }, 1000);
 
     return () => clearInterval(id);
-  }, [isPlaying]);
+  }, [playerState.isPlaying]);
 
   useEffect(() => {
     setCurrentProgress(0);
@@ -92,25 +84,34 @@ export const Controls = ({
         <div className="flex items-center gap-x-7 mx-auto show w-max mb-3">
           <FontAwesomeIcon
             icon={faShuffle}
-            onClick={() => setShuffle((prev) => !prev)}
-            className={`${shuffle ? "text-green-500" : ""} cursor-pointer`}
+            onClick={() =>
+              setPlayerState((prev) => {
+                return {
+                  ...prev,
+                  shuffle: !prev.shuffle,
+                };
+              })
+            }
+            className={`${
+              playerState.shuffle ? "text-green-500" : ""
+            } cursor-pointer`}
           />
           <FontAwesomeIcon
             icon={faBackwardStep}
             onClick={goToPreviousSong}
             className="cursor-pointer"
           />
-          {isPlaying ? (
+          {playerState.isPlaying ? (
             <FontAwesomeIcon
               icon={faCirclePause}
               className="h-7 cursor-pointer"
-              onClick={() => setIsPlaying(false)}
+              onClick={pause}
             />
           ) : (
             <FontAwesomeIcon
               icon={faCirclePlay}
               className="h-7 cursor-pointer"
-              onClick={handleStartPlaying}
+              onClick={play}
             />
           )}
           <FontAwesomeIcon
@@ -120,8 +121,17 @@ export const Controls = ({
           />
           <FontAwesomeIcon
             icon={faRepeat}
-            onClick={() => setLoop((prev) => !prev)}
-            className={`${loop ? "text-green-500" : ""} cursor-pointer`}
+            onClick={() =>
+              setPlayerState((prev) => {
+                return {
+                  ...prev,
+                  loop: !prev.loop,
+                };
+              })
+            }
+            className={`${
+              playerState.loop ? "text-green-500" : ""
+            } cursor-pointer`}
           />
         </div>
         <div className="text-xs flex w-full justify-between show items-center">
@@ -137,9 +147,9 @@ export const Controls = ({
         </div>
       </div>
       <div className="flex items-center">
-        {volume <= 0 ? (
+        {playerState.volume <= 0 ? (
           <FontAwesomeIcon icon={faVolumeXmark} />
-        ) : volume <= 0.5 ? (
+        ) : playerState.volume <= 0.5 ? (
           <FontAwesomeIcon icon={faVolumeLow} />
         ) : (
           <FontAwesomeIcon icon={faVolumeHigh} />
@@ -147,7 +157,14 @@ export const Controls = ({
         <input
           className="w-20 h-1 bg-white rounded-full ml-1 cursor-pointer"
           type="range"
-          onChange={(e) => setVolume(parseInt(e.target.value) / 100)}
+          onChange={(e) =>
+            setPlayerState((prev) => {
+              return {
+                ...prev,
+                volume: parseInt(e.target.value) / 100,
+              };
+            })
+          }
         />
       </div>
     </div>

@@ -8,3 +8,8 @@ export const formatDuration = (duration_ms: number): string => {
 
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
+
+export function millisecondsToHours(milliseconds: number): number {
+  const hours = milliseconds / (1000 * 60 * 60);
+  return hours;
+}

@@ -3,6 +3,8 @@ import { useFetch } from "@/hooks/useFetch";
 import { User } from "@/types/types";
 import React, { useEffect } from "react";
 import Image from "next/image";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
 
 const handleLogin = async () => {
   window.location.href = "/api/spotify/login";
@@ -32,10 +34,15 @@ export const Navbar = ({
 
   useEffect(() => {
     if (!user) {
-      fetchUser().then((user) => setUser(user));
+      fetchUser().then((user) => {
+        setUser(user);
+        setDoc(doc(db, "Users", user!.id), user, {
+          merge: true,
+        });
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accessToken]);
 
   return (
     <div className="flex items-center justify-between pl-5 show">
@@ -43,9 +50,9 @@ export const Navbar = ({
       <img src="/logo.jpg" alt="logo" className="w-24 object-cover" />
       <div className="flex items-center show">
         {isFetchingUser ? (
-          <p>Fetching user...</p>
+          <p></p>
         ) : fetchUserError ? (
-          <p> An error occurred fetching the user</p>
+          <p></p>
         ) : (
           user && (
             <div className="show text-black flex text-sm">

@@ -6,6 +6,7 @@ import { useAuthData } from "@/hooks/useAuthData";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useUpdateLogger } from "@/hooks/useUpdateLogger";
 import { FeaturedPlaylists } from "@/types/featuredplaylists";
 import { PlaylistPayload } from "@/types/playlists";
 import { User } from "@/types/types";
@@ -16,9 +17,10 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const searchParams = useSearchParams();
-  const anErrorOccurred: boolean = Boolean(searchParams?.get("error"));
+  const error = searchParams?.get("error");
+  const anErrorOccurred: boolean = Boolean(error);
   const { accessToken } = useAuthData();
-  const { setPlaylistPayload } = useGlobalData();
+  const { setPlaylistPayload, notify } = useGlobalData();
 
   const [playListPayload, isFetching, errors, fetchPlaylists] =
     useFetch<PlaylistPayload>({
@@ -69,7 +71,7 @@ export default function Home() {
   }, [playListPayload]);
 
   if (anErrorOccurred) {
-    console.log("An error occurred while trying to log you in!");
+    notify!(error!);
   }
 
   const [user, setUser] = useState<User | null>(null);
