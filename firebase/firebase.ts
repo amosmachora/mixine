@@ -1,6 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
+import { User } from "@/types/types";
+import { doc, setDoc } from "firebase/firestore";
+import { SavedYoutubeId } from "@/types/youtube";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
@@ -17,3 +20,15 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 export const db = getFirestore(app);
+
+export const addUserToDb = (user: User) => {
+  setDoc(doc(db, "Users", user!.id), user, {
+    merge: true,
+  });
+};
+
+export const saveSearchResult = (id: string, data: SavedYoutubeId) => {
+  setDoc(doc(db, "YoutubeSearchResults", id), data, {
+    merge: true,
+  }).then(() => console.log("Successfully saved the search result"));
+};

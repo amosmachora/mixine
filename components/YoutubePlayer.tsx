@@ -2,8 +2,8 @@ import { useFetch } from "@/hooks/useFetch";
 import { SavedYoutubeId, YoutubeSearchResult } from "@/types/youtube";
 import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/youtube";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { db, saveSearchResult } from "@/firebase/firebase";
 import { Item } from "@/types/tracks";
 import { PlayerState } from "@/types/types";
 
@@ -96,10 +96,4 @@ export const YoutubePlayer = ({
       </div>
     </div>
   );
-};
-
-const saveSearchResult = (id: string, data: SavedYoutubeId) => {
-  setDoc(doc(db, "YoutubeSearchResults", id), data, {
-    merge: true,
-  }).then(() => console.log("Successfully saved the search result"));
 };

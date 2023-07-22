@@ -3,8 +3,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { User } from "@/types/types";
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/firebase/firebase";
+import { addUserToDb } from "@/firebase/firebase";
 
 const handleLogin = async () => {
   window.location.href = "/api/spotify/login";
@@ -36,9 +35,7 @@ export const Navbar = ({
     if (!user) {
       fetchUser().then((user) => {
         setUser(user);
-        setDoc(doc(db, "Users", user!.id), user, {
-          merge: true,
-        });
+        addUserToDb(user!);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
