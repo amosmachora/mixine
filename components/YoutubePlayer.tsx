@@ -8,6 +8,7 @@ import { Item } from "@/types/tracks";
 import { PlayerState } from "@/types/types";
 import { Skeleton } from "./ui/skeleton";
 import { YoutubePlayerSkeleton } from "./YoutubePlayerSkeleton";
+import { YoutubeInfoAccordion } from "./YoutubeInfoAccordion";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
@@ -54,9 +55,7 @@ export const YoutubePlayer = ({
       if (docSnap.exists()) {
         const savedData: SavedYoutubeId = docSnap.data() as SavedYoutubeId;
         setSavedYoutubeInfo(savedData);
-        console.log("Document data:", docSnap.data());
       } else {
-        console.log("No such document!");
         fetchFunction().then((data) => {
           const videoId = data!.items[0].id.videoId;
           const searchResultForSaving: SavedYoutubeId = {
@@ -91,12 +90,13 @@ export const YoutubePlayer = ({
             }}
             playing={playerState.isPlaying}
             {...playerState}
-            onStart={play}
+            // onStart={play}
             onPlay={play}
             onPause={pause}
             wrapper={Wrapper}
           />
-          <div className="mx-auto">
+          <YoutubeInfoAccordion savedYoutubeInfo={savedYoutubeInfo} />
+          <div className="mx-auto hidden md:block">
             <p className="show mt-5 font-semibold">{savedYoutubeInfo?.title}</p>
             <p className="show font-medium mt-6">
               {savedYoutubeInfo?.channelTitle}

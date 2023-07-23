@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { PlaySection } from "./PlaySection";
 import { Item } from "@/types/tracks";
@@ -29,9 +29,22 @@ export const HorizontalTrack = ({
     .map((artist) => artist.name)
     .join(", ");
 
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isCurrentlyPlaying && trackRef.current) {
+      trackRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [isCurrentlyPlaying, item]);
+
   return (
     <div
-      className="flex justify-between items-center cursor-pointer my-3"
+      className={`flex justify-between items-center cursor-pointer my-3 text-sm ${
+        isCurrentlyPlaying ? "text-green-500" : ""
+      }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
@@ -43,6 +56,7 @@ export const HorizontalTrack = ({
           };
         });
       }}
+      ref={trackRef}
     >
       <div className="flex items-center md:w-1/2">
         <PlaySection
@@ -58,11 +72,7 @@ export const HorizontalTrack = ({
           className="w-10 h-10 object-cover mr-5"
         />
         <div className="w-full">
-          <p
-            className={`text-sm ${isCurrentlyPlaying ? "text-green-500" : ""}`}
-          >
-            {item.track.name}
-          </p>
+          <p className={`text-sm`}>{item.track.name}</p>
           <p className="text-xs">{commaSeparatedArtists}</p>
         </div>
       </div>

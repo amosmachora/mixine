@@ -3,6 +3,7 @@
 import { Controls } from "@/components/Controls";
 import { HorizontalTrack } from "@/components/HorizontalTrack";
 import { PlaylistBanner } from "@/components/PlaylistBanner";
+import { TracksSkeleton } from "@/components/TracksSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { YoutubePlayer } from "@/components/YoutubePlayer";
 import { YoutubePlayerSkeleton } from "@/components/YoutubePlayerSkeleton";
@@ -114,7 +115,7 @@ const Page = () => {
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-[100dvh] md:h-screen">
       <div className="flex show bg-gray-200 h-[88vh] flex-col md:flex-row">
         <VerticalBar />
         <div className="w-full md:w-1/2">
@@ -138,36 +139,22 @@ const Page = () => {
             image={currentPlaylist!.images[0]}
             name={currentPlaylist!.name}
           />
-          <div className="flex-grow overflow-y-scroll h-[30vh] md:h-auto">
-            {isFetching
-              ? Array.from({ length: 12 }, (_, i) => i + 1).map((i) => (
-                  <div
-                    className="flex justify-between items-center my-3"
-                    key={i}
-                  >
-                    <div className="flex items-center">
-                      <Skeleton className="h-2 w-2 mx-2" />
-                      <Skeleton className="w-10 h-10 mr-5 rounded" />
-                    </div>
-                    <div className="w-1/4">
-                      <Skeleton className="h-2 w-full mb-2" />
-                      <Skeleton className="h-2 w-full" />
-                    </div>
-                    <Skeleton className="h-2 w-1/4" />
-                    <Skeleton className="h-2 w-5" />
-                  </div>
-                ))
-              : tracksPayload?.items.map((item, i) => (
-                  <HorizontalTrack
-                    i={i}
-                    item={item}
-                    key={i}
-                    currentPlayingItem={currentPlayingItem}
-                    setPlayerState={setPlayerState}
-                    items={tracksPayload.items}
-                    setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
-                  />
-                ))}
+          <div className="flex-grow overflow-y-scroll h-0 md:h-auto">
+            {isFetching ? (
+              <TracksSkeleton />
+            ) : (
+              tracksPayload?.items.map((item, i) => (
+                <HorizontalTrack
+                  i={i}
+                  item={item}
+                  key={i}
+                  currentPlayingItem={currentPlayingItem}
+                  setPlayerState={setPlayerState}
+                  items={tracksPayload.items}
+                  setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>

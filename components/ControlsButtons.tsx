@@ -1,3 +1,4 @@
+import { useUpdateLogger } from "@/hooks/useUpdateLogger";
 import { Playlist } from "@/types/playlists";
 import { Item } from "@/types/tracks";
 import { PlayerState } from "@/types/types";
@@ -32,7 +33,8 @@ export const ControlsButtons = ({
   pause: () => void;
   className: string;
 }) => {
-  const [currentProgress, setCurrentProgress] = useState(0);
+  const lengthInMs = item?.track.duration_ms ?? 0;
+  const [currentProgress, setCurrentProgress] = useState<number>(0);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -47,6 +49,7 @@ export const ControlsButtons = ({
   useEffect(() => {
     setCurrentProgress(0);
   }, [item]);
+
   return (
     <div className={className}>
       <div className="flex items-center gap-x-7 mx-auto show w-max mb-3">
@@ -103,13 +106,14 @@ export const ControlsButtons = ({
         />
       </div>
       <div className="text-xs flex w-full justify-between show items-center">
-        <p className="mr-2">{0.0}</p>
+        <p className="mr-2">{formatDuration(currentProgress * 1000)}</p>
         <input
           type="range"
           className="bg-white h-1 flex-1 rounded-full custom-range"
           value={currentProgress}
+          onChange={(e) => console.log(e.target.value)}
           min={0}
-          max={item?.track.duration_ms ?? 0 / 1000}
+          max={lengthInMs / 1000}
         />
         <p className="ml-2">{formatDuration(item?.track.duration_ms!)}</p>
       </div>

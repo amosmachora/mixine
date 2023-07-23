@@ -7,18 +7,15 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { addUserToDb } from "@/firebase/firebase";
 import { Skeleton } from "./ui/skeleton";
+import { useGlobalData } from "@/hooks/useGlobalData";
 
 const handleLogin = async () => {
-  if (typeof window !== "undefined") {
-    window.location.href = "/api/spotify/login";
-  }
+  window.location.href = "/api/spotify/login";
 };
 
 const handleLogOut = () => {
-  if (typeof window !== "undefined") {
-    localStorage.clear();
-    window.location.reload();
-  }
+  localStorage.clear();
+  window.location.reload();
 };
 
 export const Navbar = ({
