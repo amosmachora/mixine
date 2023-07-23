@@ -78,7 +78,7 @@ export const YoutubePlayer = ({
   }, [currentItem]);
 
   return (
-    <div className="show flex-1 flex flex-col items-center pt-5">
+    <div className="show flex-1 flex flex-col items-center p-5">
       {isFetching ? (
         <YoutubePlayerSkeleton />
       ) : (
@@ -94,13 +94,14 @@ export const YoutubePlayer = ({
             onStart={play}
             onPlay={play}
             onPause={pause}
+            wrapper={Wrapper}
           />
           <div className="mx-auto">
             <p className="show mt-5 font-semibold">{savedYoutubeInfo?.title}</p>
             <p className="show font-medium mt-6">
               {savedYoutubeInfo?.channelTitle}
             </p>
-            <p className="show bg-gray-100 rounded p-2">
+            <p className="show bg-gray-100 rounded p-2 text-sm">
               {savedYoutubeInfo?.description}
             </p>
           </div>
@@ -108,4 +109,8 @@ export const YoutubePlayer = ({
       )}
     </div>
   );
+};
+
+export const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  return <div className="show mx-auto aspect-video w-full">{children}</div>;
 };

@@ -11,13 +11,13 @@ const GlobalData = createContext<{
   >;
   setCurrentPlaylist: React.Dispatch<React.SetStateAction<Playlist | null>>;
   currentPlaylist: Playlist | null;
-  notify: ((message: string) => Id) | null;
+  notify: ((message: string) => Id) | (() => void);
 }>({
   playlists: null,
   setPlaylistPayload: () => {},
   currentPlaylist: null,
   setCurrentPlaylist: () => {},
-  notify: null,
+  notify: () => {},
 });
 
 export const GlobalDataProvider = ({

@@ -44,7 +44,7 @@ export const HorizontalTrack = ({
         });
       }}
     >
-      <div className="flex items-center w-1/2">
+      <div className="flex items-center md:w-1/2">
         <PlaySection
           isHovered={isHovered}
           preview_url={item.track.preview_url}
@@ -66,8 +66,10 @@ export const HorizontalTrack = ({
           <p className="text-xs">{commaSeparatedArtists}</p>
         </div>
       </div>
-      <p className={`text-sm truncate w-1/4`}>{item.track.album.name}</p>
-      <p className="text-sm">{formatDuration(item.track.duration_ms)}</p>
+      <p className={`text-sm truncate w-1/4 hidden md:block`}>
+        {item.track.album.name}
+      </p>
+      <p className="text-sm mr-3">{formatDuration(item.track.duration_ms)}</p>
     </div>
   );
 };

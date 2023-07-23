@@ -62,7 +62,7 @@ export function useFetch<T>(
       }
     } catch (error: any) {
       setErrors(error as AxiosError);
-      notify!(error.response.data.message);
+      notify(error.response.data.message ?? "An error occurred :(");
       return null;
     } finally {
       setIsFetching(false);

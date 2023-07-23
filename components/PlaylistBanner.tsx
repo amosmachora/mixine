@@ -12,13 +12,13 @@ export const PlaylistBanner = ({
   image: PlaylistImage;
 }) => {
   return (
-    <div className="flex items-end show">
+    <div className="flex items-end show p-5">
       <Image
         src={image!.url}
         alt={name}
         height={640}
         width={640}
-        className="h-[120px] w-[120px]"
+        className="h-16 w-16 md:h-[120px] md:w-[120px]"
       />
       <div className="ml-4">
         <p>{name}</p>

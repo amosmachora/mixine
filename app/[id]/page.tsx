@@ -115,9 +115,9 @@ const Page = () => {
 
   return (
     <div className="h-screen">
-      <div className="flex show bg-gray-200 h-[88vh]">
+      <div className="flex show bg-gray-200 h-[88vh] flex-col md:flex-row">
         <VerticalBar />
-        <div className="w-1/2">
+        <div className="w-full md:w-1/2">
           {isFetching ? (
             <YoutubePlayerSkeleton />
           ) : (
@@ -132,13 +132,13 @@ const Page = () => {
             )
           )}
         </div>
-        <div className="w-5/12 flex-1 show flex flex-col flex-grow">
+        <div className="w-full md:w-5/12 flex-1 show flex flex-col flex-grow">
           <PlaylistBanner
             description={currentPlaylist!.description}
             image={currentPlaylist!.images[0]}
             name={currentPlaylist!.name}
           />
-          <div className="flex-grow overflow-y-scroll">
+          <div className="flex-grow overflow-y-scroll h-[30vh] md:h-auto">
             {isFetching
               ? Array.from({ length: 12 }, (_, i) => i + 1).map((i) => (
                   <div
