@@ -9,12 +9,16 @@ import { addUserToDb } from "@/firebase/firebase";
 import { Skeleton } from "./ui/skeleton";
 
 const handleLogin = async () => {
-  window.location.href = "/api/spotify/login";
+  if (typeof window !== "undefined") {
+    window.location.href = "/api/spotify/login";
+  }
 };
 
 const handleLogOut = () => {
-  localStorage.clear();
-  window.location.reload();
+  if (typeof window !== "undefined") {
+    localStorage.clear();
+    window.location.reload();
+  }
 };
 
 export const Navbar = ({
