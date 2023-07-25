@@ -11,7 +11,6 @@ import { useUpdateLogger } from "@/hooks/useUpdateLogger";
 import { FeaturedPlaylists } from "@/types/featuredplaylists";
 import { PlaylistPayload } from "@/types/playlists";
 import { User } from "@/types/types";
-import { LocalStorageKeys } from "@/util/Constants";
 import { getGreeting } from "@/util/functions";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,56 +22,13 @@ export default function Home() {
   const searchParams = useSearchParams();
   const error = searchParams?.get("error");
   const anErrorOccurred: boolean = Boolean(error);
-  const { accessToken } = useAuthData();
-  const { setPlaylistPayload, notify } = useGlobalData();
-
-  const [playListPayload, isFetching, errors, fetchPlaylists] =
-    useFetch<PlaylistPayload>({
-      body: null,
-      fetchOnMount: false,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      method: "GET",
-      saveAble: true,
-      url: "https://api.spotify.com/v1/me/playlists",
-    });
-
-  const [
-    featuredPlaylists,
+  const {
+    personalPlaylists,
+    isFetchingPersonalPlaylists,
+    notify,
     isFetchingFeaturedPlaylists,
-    featuredPlaylistsError,
-    fetchFeaturedPlaylists,
-  ] = useFetch<FeaturedPlaylists>({
-    url: "https://api.spotify.com/v1/browse/featured-playlists",
-    method: "GET",
-    body: null,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    fetchOnMount: false,
-    saveAble: true,
-  });
-
-  useEffect(() => {
-    if (accessToken) {
-      if (!playListPayload) {
-        fetchPlaylists();
-      }
-
-      if (!featuredPlaylists) {
-        fetchFeaturedPlaylists();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (playListPayload) {
-      setPlaylistPayload(playListPayload);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playListPayload]);
+    featuredPlaylists,
+  } = useGlobalData();
 
   if (anErrorOccurred) {
     notify!(error!);
@@ -89,13 +45,17 @@ export default function Home() {
         </p>
       )}
 
-      {isFetching ? (
+      {isFetchingPersonalPlaylists ? (
         <PlaylistsSkeleton />
       ) : (
-        playListPayload && (
+        personalPlaylists && (
           <div className="flex flex-wrap mt-5 gap-y-5 show">
-            {playListPayload?.items.map((playlist) => (
-              <PlaylistTab playlist={playlist} key={playlist.id} />
+            {personalPlaylists?.items.map((playlist) => (
+              <PlaylistTab
+                playlist={playlist}
+                key={playlist.id}
+                type="personal"
+              />
             ))}
           </div>
         )
@@ -108,7 +68,11 @@ export default function Home() {
         featuredPlaylists && (
           <div className="flex flex-wrap mt-5 gap-y-5 show">
             {featuredPlaylists?.playlists.items.map((playlist) => (
-              <PlaylistTab playlist={playlist} key={playlist.id} />
+              <PlaylistTab
+                playlist={playlist}
+                key={playlist.id}
+                type="featured"
+              />
             ))}
           </div>
         )

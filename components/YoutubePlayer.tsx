@@ -77,7 +77,7 @@ export const YoutubePlayer = ({
   }, [currentItem]);
 
   return (
-    <div className="show flex-1 flex flex-col items-center p-5">
+    <div className="show flex-1 flex flex-col items-center p-3 md:p-5">
       {isFetching ? (
         <YoutubePlayerSkeleton />
       ) : (
@@ -89,6 +89,7 @@ export const YoutubePlayer = ({
               playerVars: { autoplay: 1 },
             }}
             playing={playerState.isPlaying}
+            // playing={false}
             {...playerState}
             // onStart={play}
             onPlay={play}

@@ -1,23 +1,28 @@
 "use client";
 
+import { FeaturedPlaylists } from "@/types/featuredplaylists";
 import { Playlist, PlaylistPayload } from "@/types/playlists";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast, Id } from "react-toastify";
+import { useAuthData } from "./useAuthData";
+import { useFetch } from "./useFetch";
 
 const GlobalData = createContext<{
-  playlists: Playlist[] | null;
-  setPlaylistPayload: React.Dispatch<
-    React.SetStateAction<PlaylistPayload | null>
-  >;
-  setCurrentPlaylist: React.Dispatch<React.SetStateAction<Playlist | null>>;
-  currentPlaylist: Playlist | null;
+  personalPlaylists: PlaylistPayload | null;
   notify: ((message: string) => Id) | (() => void);
+  isFetchingPersonalPlaylists: boolean;
+  featuredPlaylists: FeaturedPlaylists | null;
+  isFetchingFeaturedPlaylists: boolean;
+  fetchFeaturedPlaylists: () => Promise<FeaturedPlaylists | null>;
+  fetchPersonalPlaylists: () => Promise<PlaylistPayload | null>;
 }>({
-  playlists: null,
-  setPlaylistPayload: () => {},
-  currentPlaylist: null,
-  setCurrentPlaylist: () => {},
+  personalPlaylists: null,
   notify: () => {},
+  isFetchingPersonalPlaylists: false,
+  featuredPlaylists: null,
+  isFetchingFeaturedPlaylists: false,
+  fetchFeaturedPlaylists: () => Promise.resolve<FeaturedPlaylists | null>(null),
+  fetchPersonalPlaylists: () => Promise.resolve<PlaylistPayload | null>(null),
 });
 
 export const GlobalDataProvider = ({
@@ -25,10 +30,39 @@ export const GlobalDataProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [playlistPayload, setPlaylistPayload] =
-    useState<PlaylistPayload | null>(null);
+  const { accessToken } = useAuthData();
 
-  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
+  const [
+    personalPlaylists,
+    isFetchingPersonalPlaylists,
+    personalPlaylistsError,
+    fetchPersonalPlaylists,
+  ] = useFetch<PlaylistPayload>({
+    body: null,
+    fetchOnMount: false,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    method: "GET",
+    saveAble: true,
+    url: "https://api.spotify.com/v1/me/playlists",
+  });
+
+  const [
+    featuredPlaylists,
+    isFetchingFeaturedPlaylists,
+    featuredPlaylistsError,
+    fetchFeaturedPlaylists,
+  ] = useFetch<FeaturedPlaylists>({
+    url: "https://api.spotify.com/v1/browse/featured-playlists",
+    method: "GET",
+    body: null,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    fetchOnMount: false,
+    saveAble: true,
+  });
 
   const notify = (message: string) =>
     toast(message, {
@@ -42,14 +76,29 @@ export const GlobalDataProvider = ({
       theme: "light",
     });
 
+  useEffect(() => {
+    if (accessToken) {
+      if (!personalPlaylists) {
+        fetchPersonalPlaylists();
+      }
+
+      if (!featuredPlaylists) {
+        fetchFeaturedPlaylists();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
+
   return (
     <GlobalData.Provider
       value={{
-        playlists: playlistPayload?.items ?? null,
-        setPlaylistPayload,
-        currentPlaylist,
-        setCurrentPlaylist,
+        personalPlaylists,
+        isFetchingFeaturedPlaylists,
+        featuredPlaylists,
         notify,
+        isFetchingPersonalPlaylists,
+        fetchFeaturedPlaylists,
+        fetchPersonalPlaylists,
       }}
     >
       {children}

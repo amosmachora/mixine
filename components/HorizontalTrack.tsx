@@ -13,14 +13,12 @@ export const HorizontalTrack = ({
   currentPlayingItem,
   setCurrentPlayingItemIndex,
   items,
-  setPlayerState,
 }: {
   items: Item[];
   item: Item;
   i: number;
   currentPlayingItem: Item | null;
   setCurrentPlayingItemIndex: React.Dispatch<React.SetStateAction<number>>;
-  setPlayerState: React.Dispatch<React.SetStateAction<PlayerState>>;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const isCurrentlyPlaying = currentPlayingItem?.track.id === item.track.id;
@@ -49,12 +47,6 @@ export const HorizontalTrack = ({
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
         setCurrentPlayingItemIndex(items.indexOf(item));
-        setPlayerState((prev) => {
-          return {
-            ...prev,
-            isPlaying: true,
-          };
-        });
       }}
       ref={trackRef}
     >

@@ -11,30 +11,82 @@ import { useAuthData } from "@/hooks/useAuthData";
 import { useFetch } from "@/hooks/useFetch";
 import { useGlobalData } from "@/hooks/useGlobalData";
 import { useUpdateLogger } from "@/hooks/useUpdateLogger";
+import { Playlist } from "@/types/playlists";
 import { Item, TracksPayload } from "@/types/tracks";
 import { PlayerState } from "@/types/types";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { VerticalBar } from "./VerticalBar";
 
 const Page = () => {
-  const { currentPlaylist } = useGlobalData();
+  const {
+    personalPlaylists,
+    featuredPlaylists,
+    fetchFeaturedPlaylists,
+    fetchPersonalPlaylists,
+  } = useGlobalData();
   const { accessToken } = useAuthData();
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("src");
+  const playlistId = pathName.replace("/", "");
 
-  const [tracksPayload, isFetching, errors] = useFetch<TracksPayload>({
-    body: null,
-    fetchOnMount: true,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    method: "GET",
-    saveAble: true,
-    url: currentPlaylist?.tracks.href ?? "",
-  });
+  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      if (type === "featured") {
+        if (!featuredPlaylists) {
+          await fetchFeaturedPlaylists();
+        }
+        const playlist = featuredPlaylists?.playlists.items.find(
+          (item) => item.id === playlistId
+        );
+        setCurrentPlaylist(playlist ?? null);
+      } else {
+        if (!personalPlaylists) {
+          await fetchPersonalPlaylists();
+        }
+        const playlist = personalPlaylists?.items.find(
+          (item) => item.id === playlistId
+        );
+        setCurrentPlaylist(playlist ?? null);
+      }
+    };
+
+    init();
+  }, [
+    featuredPlaylists,
+    fetchFeaturedPlaylists,
+    fetchPersonalPlaylists,
+    personalPlaylists,
+    playlistId,
+    type,
+  ]);
+
+  const [tracksPayload, isFetching, errors, fetchTracks] =
+    useFetch<TracksPayload>({
+      body: null,
+      fetchOnMount: false,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      method: "GET",
+      saveAble: true,
+      url: currentPlaylist?.tracks.href ?? "",
+    });
+
+  useEffect(() => {
+    if (currentPlaylist) {
+      fetchTracks();
+    }
+  }, [currentPlaylist, fetchTracks]);
 
   const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
   const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
     null
   );
+
   // state of the player
   const [playerState, setPlayerState] = useState<PlayerState>({
     isPlaying: false,
@@ -50,17 +102,17 @@ const Page = () => {
   }, [tracksPayload]);
 
   useEffect(() => {
-    if (currentPlayingItemIndex) {
+    if (currentPlayingItemIndex !== 0) {
       setCurrentPlayingItem(
         tracksPayload?.items[currentPlayingItemIndex] ?? null
       );
-      setPlayerState((prev) => {
-        return {
-          ...prev,
-          isPlaying: true,
-        };
-      });
     }
+    setPlayerState((prev) => {
+      return {
+        ...prev,
+        isPlaying: true,
+      };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPlayingItemIndex]);
 
@@ -116,31 +168,29 @@ const Page = () => {
 
   return (
     <div className="h-[100dvh] md:h-screen">
-      <div className="flex show bg-gray-200 h-[88vh] flex-col md:flex-row">
+      <div className="flex show bg-gray-200 h-[85vh] md:h-[88vh] flex-col md:flex-row">
         <VerticalBar />
         <div className="w-full md:w-1/2">
-          {isFetching ? (
+          {!currentPlayingItem ? (
             <YoutubePlayerSkeleton />
           ) : (
-            currentPlayingItem && (
-              <YoutubePlayer
-                currentItem={currentPlayingItem!}
-                playerState={playerState}
-                play={play}
-                pause={pause}
-                goToNextSong={goToNextSong}
-              />
-            )
+            <YoutubePlayer
+              currentItem={currentPlayingItem!}
+              playerState={playerState}
+              play={play}
+              pause={pause}
+              goToNextSong={goToNextSong}
+            />
           )}
         </div>
         <div className="w-full md:w-5/12 flex-1 show flex flex-col flex-grow">
           <PlaylistBanner
-            description={currentPlaylist!.description}
-            image={currentPlaylist!.images[0]}
-            name={currentPlaylist!.name}
+            description={currentPlaylist?.description ?? null}
+            image={currentPlaylist?.images[0] ?? null}
+            name={currentPlaylist?.name ?? null}
           />
           <div className="flex-grow overflow-y-scroll h-0 md:h-auto">
-            {isFetching ? (
+            {!tracksPayload ? (
               <TracksSkeleton />
             ) : (
               tracksPayload?.items.map((item, i) => (
@@ -149,7 +199,6 @@ const Page = () => {
                   item={item}
                   key={i}
                   currentPlayingItem={currentPlayingItem}
-                  setPlayerState={setPlayerState}
                   items={tracksPayload.items}
                   setCurrentPlayingItemIndex={setCurrentPlayingItemIndex}
                 />
@@ -159,7 +208,7 @@ const Page = () => {
         </div>
       </div>
       <Controls
-        playlist={currentPlaylist!}
+        playlist={currentPlaylist}
         item={currentPlayingItem}
         goToNextSong={goToNextSong}
         goToPreviousSong={goToPreviousSong}

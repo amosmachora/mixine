@@ -7,18 +7,18 @@ export const PlaylistBanner = ({
   image,
   description,
 }: {
-  name: string;
+  name: string | null;
   description: string | null;
-  image: PlaylistImage;
+  image: PlaylistImage | null;
 }) => {
   return (
-    <div className="flex items-end show p-5">
+    <div className="flex items-end show p-3 md:p-5">
       <Image
-        src={image!.url}
-        alt={name}
+        src={image?.url ?? ""}
+        alt={name ?? "test"}
         height={640}
         width={640}
-        className="h-16 w-16 md:h-[120px] md:w-[120px]"
+        className="h-8 w-8 md:h-[120px] md:w-[120px] outline-2 outline-primary"
       />
       <div className="ml-4">
         <p>{name}</p>

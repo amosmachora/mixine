@@ -30,7 +30,7 @@ export const Controls = ({
   pause,
   play,
 }: {
-  playlist: Playlist;
+  playlist: Playlist | null;
   item: Item | null;
   playerState: PlayerState;
   goToNextSong: () => void;
@@ -40,7 +40,7 @@ export const Controls = ({
   pause: () => void;
 }) => {
   return (
-    <div className="show flex justify-between py-2 md:py-4 items-center bg-black text-white px-[2%] h-[12vh] flex-wrap z-50 relative">
+    <div className="show flex justify-between py-4 items-center bg-black text-white px-[2%] h-[15vh] md:h-[12vh] flex-wrap z-50 relative">
       <ControlsButtons
         className="md:absolute md:-translate-x-1/2 md:left-1/2 w-full md:w-1/3 show px-5 md:px-0"
         goToNextSong={goToNextSong}
@@ -62,7 +62,7 @@ export const Controls = ({
           />
         ) : (
           <Image
-            src={playlist.images[0].url!}
+            src={playlist?.images[0].url ?? ""}
             height={640}
             width={640}
             alt={playlist?.name!}
