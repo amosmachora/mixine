@@ -40,9 +40,9 @@ export const Controls = ({
   pause: () => void;
 }) => {
   return (
-    <div className="show flex justify-between py-4 items-center bg-black text-white px-[2%] h-[15vh] md:h-[12vh] flex-wrap z-50 relative">
+    <div className="show flex justify-between md:py-4 items-center bg-black text-white px-[2%] h-[15vh] md:h-[12vh] flex-wrap z-50 relative">
       <ControlsButtons
-        className="md:absolute md:-translate-x-1/2 md:left-1/2 w-full md:w-1/3 show px-5 md:px-0"
+        className="md:absolute md:-translate-x-1/2 md:left-1/2 w-full md:w-1/3 show px-5 md:px-0 mb-2 md:mb-0"
         goToNextSong={goToNextSong}
         goToPreviousSong={goToPreviousSong}
         item={item}

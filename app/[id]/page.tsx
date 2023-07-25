@@ -19,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import { VerticalBar } from "./VerticalBar";
 
 const Page = () => {
+  //local hooks
   const {
     personalPlaylists,
     featuredPlaylists,
@@ -26,12 +27,39 @@ const Page = () => {
     fetchPersonalPlaylists,
   } = useGlobalData();
   const { accessToken } = useAuthData();
+
+  //navigation hooks
   const pathName = usePathname();
   const searchParams = useSearchParams();
+
   const type = searchParams.get("src");
   const playlistId = pathName.replace("/", "");
 
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
+
+  //fetch hook
+  const [tracksPayload, isFetching, , fetchTracks] = useFetch<TracksPayload>({
+    body: null,
+    fetchOnMount: false,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    method: "GET",
+    saveAble: true,
+    url: currentPlaylist?.tracks.href ?? "",
+  });
+
+  const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
+  const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
+    tracksPayload?.items[0] ?? null
+  );
+  // state of the player
+  const [playerState, setPlayerState] = useState<PlayerState>({
+    isPlaying: false,
+    loop: false,
+    shuffle: false,
+    volume: 0.5,
+  });
 
   useEffect(() => {
     const init = async () => {
@@ -55,51 +83,15 @@ const Page = () => {
     };
 
     init();
-  }, [
-    featuredPlaylists,
-    fetchFeaturedPlaylists,
-    fetchPersonalPlaylists,
-    personalPlaylists,
-    playlistId,
-    type,
-  ]);
-
-  const [tracksPayload, isFetching, errors, fetchTracks] =
-    useFetch<TracksPayload>({
-      body: null,
-      fetchOnMount: false,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      method: "GET",
-      saveAble: true,
-      url: currentPlaylist?.tracks.href ?? "",
-    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (currentPlaylist) {
-      fetchTracks();
+      fetchTracks().then((res) => setCurrentPlayingItem(res?.items[0]!));
     }
-  }, [currentPlaylist, fetchTracks]);
-
-  const [currentPlayingItemIndex, setCurrentPlayingItemIndex] = useState(0);
-  const [currentPlayingItem, setCurrentPlayingItem] = useState<Item | null>(
-    null
-  );
-
-  // state of the player
-  const [playerState, setPlayerState] = useState<PlayerState>({
-    isPlaying: false,
-    loop: false,
-    shuffle: false,
-    volume: 0.5,
-  });
-
-  useEffect(() => {
-    if (tracksPayload) {
-      setCurrentPlayingItem(tracksPayload.items[0]);
-    }
-  }, [tracksPayload]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPlaylist]);
 
   useEffect(() => {
     if (currentPlayingItemIndex !== 0) {
@@ -107,32 +99,21 @@ const Page = () => {
         tracksPayload?.items[currentPlayingItemIndex] ?? null
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPlayingItemIndex]);
+
+  useUpdateLogger(currentPlayingItemIndex, "currentPLayingItemIdx");
+  useUpdateLogger(currentPlayingItem, "currentPLayingItem");
+  useUpdateLogger(tracksPayload, "tracksPayload");
+  useUpdateLogger(currentPlaylist, "currentPlaylist");
+
+  const play = () => {
     setPlayerState((prev) => {
       return {
         ...prev,
         isPlaying: true,
       };
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPlayingItemIndex]);
-
-  const play = () => {
-    if (currentPlayingItem) {
-      setPlayerState((prev) => {
-        return {
-          ...prev,
-          isPlaying: true,
-        };
-      });
-    } else {
-      setCurrentPlayingItem(tracksPayload?.items[0] ?? null);
-      setPlayerState((prev) => {
-        return {
-          ...prev,
-          isPlaying: true,
-        };
-      });
-    }
   };
 
   const pause = () => {

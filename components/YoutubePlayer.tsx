@@ -9,6 +9,7 @@ import { PlayerState } from "@/types/types";
 import { Skeleton } from "./ui/skeleton";
 import { YoutubePlayerSkeleton } from "./YoutubePlayerSkeleton";
 import { YoutubeInfoAccordion } from "./YoutubeInfoAccordion";
+import { useGlobalData } from "@/hooks/useGlobalData";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
@@ -46,6 +47,8 @@ export const YoutubePlayer = ({
 
   const [savedYoutubeInfo, setSavedYoutubeInfo] =
     useState<SavedYoutubeId | null>(null);
+
+  const { notify } = useGlobalData();
 
   useEffect(() => {
     const init = async () => {
@@ -95,9 +98,12 @@ export const YoutubePlayer = ({
             onPlay={play}
             onPause={pause}
             wrapper={Wrapper}
+            onBuffer={pause}
+            onBufferEnd={play}
+            onError={() => notify("An error occurred :(")}
           />
           <YoutubeInfoAccordion savedYoutubeInfo={savedYoutubeInfo} />
-          <div className="mx-auto hidden md:block">
+          <div className="mx-auto hidden md:block w-full">
             <p className="show mt-5 font-semibold">{savedYoutubeInfo?.title}</p>
             <p className="show font-medium mt-6">
               {savedYoutubeInfo?.channelTitle}

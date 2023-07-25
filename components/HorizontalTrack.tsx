@@ -33,7 +33,7 @@ export const HorizontalTrack = ({
     if (isCurrentlyPlaying && trackRef.current) {
       trackRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "nearest",
+        block: "center",
       });
     }
   }, [isCurrentlyPlaying, item]);
@@ -45,9 +45,7 @@ export const HorizontalTrack = ({
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => {
-        setCurrentPlayingItemIndex(items.indexOf(item));
-      }}
+      onClick={() => setCurrentPlayingItemIndex(items.indexOf(item))}
       ref={trackRef}
     >
       <div className="flex items-center md:w-1/2">
