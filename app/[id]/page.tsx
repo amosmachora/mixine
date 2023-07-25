@@ -59,26 +59,40 @@ const Page = () => {
     loop: false,
     shuffle: false,
     volume: 0.5,
+    played: 0.0,
+    videoDuration: 0.0,
   });
 
   useEffect(() => {
     const init = async () => {
       if (type === "featured") {
         if (!featuredPlaylists) {
-          await fetchFeaturedPlaylists();
+          await fetchFeaturedPlaylists().then((playlists) => {
+            const playlist = playlists?.playlists.items.find(
+              (item) => item.id === playlistId
+            );
+            setCurrentPlaylist(playlist ?? null);
+          });
+        } else {
+          const playlist = featuredPlaylists?.playlists.items.find(
+            (item) => item.id === playlistId
+          );
+          setCurrentPlaylist(playlist ?? null);
         }
-        const playlist = featuredPlaylists?.playlists.items.find(
-          (item) => item.id === playlistId
-        );
-        setCurrentPlaylist(playlist ?? null);
       } else {
         if (!personalPlaylists) {
-          await fetchPersonalPlaylists();
+          await fetchPersonalPlaylists().then((playlists) => {
+            const playlist = playlists?.items.find(
+              (item) => item.id === playlistId
+            );
+            setCurrentPlaylist(playlist ?? null);
+          });
+        } else {
+          const playlist = personalPlaylists?.items.find(
+            (item) => item.id === playlistId
+          );
+          setCurrentPlaylist(playlist ?? null);
         }
-        const playlist = personalPlaylists?.items.find(
-          (item) => item.id === playlistId
-        );
-        setCurrentPlaylist(playlist ?? null);
       }
     };
 
@@ -106,6 +120,8 @@ const Page = () => {
   useUpdateLogger(currentPlayingItem, "currentPLayingItem");
   useUpdateLogger(tracksPayload, "tracksPayload");
   useUpdateLogger(currentPlaylist, "currentPlaylist");
+
+  useUpdateLogger(personalPlaylists, "personalPlaylist");
 
   const play = () => {
     setPlayerState((prev) => {
@@ -161,6 +177,7 @@ const Page = () => {
               play={play}
               pause={pause}
               goToNextSong={goToNextSong}
+              setPlayerState={setPlayerState}
             />
           )}
         </div>

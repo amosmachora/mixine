@@ -19,12 +19,14 @@ export const YoutubePlayer = ({
   play,
   pause,
   goToNextSong,
+  setPlayerState,
 }: {
   currentItem: Item;
   playerState: PlayerState;
   play: () => void;
   pause: () => void;
   goToNextSong: () => void;
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerState>>;
 }) => {
   const params = new URLSearchParams();
 
@@ -69,7 +71,11 @@ export const YoutubePlayer = ({
             title: data?.items[0].snippet.title!,
           };
           setSavedYoutubeInfo(searchResultForSaving);
-          saveSearchResult(currentItem.track.id, searchResultForSaving);
+          try {
+            saveSearchResult(currentItem.track.id, searchResultForSaving);
+          } catch (error) {
+            notify("You might be offline");
+          }
         });
       }
     };
@@ -101,6 +107,22 @@ export const YoutubePlayer = ({
             onBuffer={pause}
             onBufferEnd={play}
             onError={() => notify("An error occurred :(")}
+            onProgress={(state) => {
+              setPlayerState((prev) => {
+                return {
+                  ...prev,
+                  played: state.played,
+                };
+              });
+            }}
+            onDuration={(duration) =>
+              setPlayerState((prev) => {
+                return {
+                  ...prev,
+                  videoDuration: duration,
+                };
+              })
+            }
           />
           <YoutubeInfoAccordion savedYoutubeInfo={savedYoutubeInfo} />
           <div className="mx-auto hidden md:block w-full">

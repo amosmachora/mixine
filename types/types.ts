@@ -69,4 +69,6 @@ export interface PlayerState {
   shuffle: boolean;
   loop: boolean;
   volume: number;
+  played: number;
+  videoDuration: number;
 }

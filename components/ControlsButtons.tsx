@@ -2,7 +2,7 @@ import { useUpdateLogger } from "@/hooks/useUpdateLogger";
 import { Playlist } from "@/types/playlists";
 import { Item } from "@/types/tracks";
 import { PlayerState } from "@/types/types";
-import { formatDuration } from "@/util/functions";
+import { formatDuration, secondsToMinutes } from "@/util/functions";
 import {
   faShuffle,
   faBackwardStep,
@@ -33,23 +33,6 @@ export const ControlsButtons = ({
   pause: () => void;
   className: string;
 }) => {
-  const lengthInMs = item?.track.duration_ms ?? 0;
-  const [currentProgress, setCurrentProgress] = useState<number>(0);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (playerState.isPlaying) {
-        setCurrentProgress((prev) => prev + 1);
-      }
-    }, 1000);
-
-    return () => clearInterval(id);
-  }, [playerState.isPlaying]);
-
-  useEffect(() => {
-    setCurrentProgress(0);
-  }, [item]);
-
   return (
     <div className={className}>
       <div className="flex items-center gap-x-7 mx-auto show w-max mb-3">
@@ -106,16 +89,21 @@ export const ControlsButtons = ({
         />
       </div>
       <div className="text-xs flex w-full justify-between show items-center">
-        <p className="mr-2">{formatDuration(currentProgress * 1000)}</p>
+        <p className="mr-2">
+          {secondsToMinutes(
+            parseInt(
+              (playerState.played * playerState.videoDuration).toFixed(0)
+            )
+          )}
+        </p>
         <input
           type="range"
           className="bg-white h-1 flex-1 rounded-full custom-range"
-          value={currentProgress}
-          onChange={(e) => console.log(e.target.value)}
+          value={(playerState.played * 100).toFixed(0)}
           min={0}
-          max={lengthInMs / 1000}
+          max={100}
         />
-        <p className="ml-2">{formatDuration(item?.track.duration_ms!)}</p>
+        <p className="ml-2">{secondsToMinutes(playerState.videoDuration)}</p>
       </div>
     </div>
   );

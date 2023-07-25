@@ -26,3 +26,11 @@ export function getGreeting(): string {
     return "Good evening";
   }
 }
+
+export function secondsToMinutes(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${
+    minutes.toString() + ":" + remainingSeconds.toString().padStart(2, "0")
+  }`;
+}
