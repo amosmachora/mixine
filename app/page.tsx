@@ -1,6 +1,7 @@
 "use client";
 
 import { Navbar } from "@/components/Navbar";
+import { NoUser } from "@/components/NoUser";
 import { PlaylistsSkeleton } from "@/components/PlaylistsSkeleton";
 import { PlaylistTab } from "@/components/PlaylistTab";
 import { useAuthData } from "@/hooks/useAuthData";
@@ -31,18 +32,20 @@ export default function Home() {
   } = useGlobalData();
 
   if (anErrorOccurred) {
-    notify!(error!);
+    notify(error!);
   }
 
   const [user, setUser] = useState<User | null>(null);
 
   return (
-    <main className="px-5">
+    <main className="px-5 bg-gray-200">
       <Navbar setUser={setUser} />
-      {user && (
+      {user ? (
         <p className="text-3xl mt-5">
           {getGreeting()} {user?.display_name}{" "}
         </p>
+      ) : (
+        <NoUser />
       )}
 
       {isFetchingPersonalPlaylists ? (

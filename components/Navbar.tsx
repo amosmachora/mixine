@@ -7,9 +7,8 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { addUserToDb } from "@/firebase/firebase";
 import { Skeleton } from "./ui/skeleton";
-import { useGlobalData } from "@/hooks/useGlobalData";
 
-const handleLogin = async () => {
+export const handleLogin = async () => {
   window.location.href = "/api/spotify/login";
 };
 
@@ -49,7 +48,11 @@ export const Navbar = ({
   return (
     <div className="flex items-center justify-between sm:pl-5 show">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/logo.jpg" alt="logo" className="w-24 object-cover" />
+      <img
+        src="/logo.jpg"
+        alt="logo"
+        className="w-16 h-16 object-cover rounded-full"
+      />
       <div className="flex items-center show">
         {isFetchingUser ? (
           <div className="flex items-center space-x-4">
@@ -60,29 +63,31 @@ export const Navbar = ({
             <Skeleton className="h-10 w-10 rounded-full" />
           </div>
         ) : (
-          <div className="show text-black hidden sm:flex text-sm ">
-            <div>
-              <p>{user?.display_name}</p>
-              <p>{user?.email}</p>
+          user && (
+            <div className="show text-black hidden sm:flex text-sm ">
+              <div>
+                <p>{user?.display_name}</p>
+                <p>{user?.email}</p>
+              </div>
+              <Image
+                src={user?.images[0].url!}
+                alt={user?.display_name!}
+                height={user?.images[0].height}
+                width={user?.images[0].width}
+                className="object-cover rounded-full h-10 w-10 border-2 border-primary cursor-pointer ml-3"
+              />
             </div>
-            <Image
-              src={user?.images[0].url!}
-              alt={user?.display_name!}
-              height={user?.images[0].height}
-              width={user?.images[0].width}
-              className="object-cover rounded-full h-10 w-10 border-2 border-primary cursor-pointer ml-3"
-            />
-          </div>
+          )
         )}
         <a
-          className="p-3 show"
+          className="p-3 show text-sm"
           href="https://github.com/amosmachora/mixine"
           target="_blank"
         >
           ⭐ On Github
         </a>
         <button
-          className="p-3 show"
+          className="p-3 show text-sm"
           onClick={user ? handleLogOut : handleLogin}
         >
           {user ? "Log out" : "Login With Spotify"}
