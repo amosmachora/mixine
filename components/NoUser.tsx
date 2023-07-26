@@ -5,8 +5,8 @@ import { handleLogin } from "./Navbar";
 export const NoUser = () => {
   return (
     <section className="px-[5%]">
-      <h1 className="text-center font-semibold text-3xl text-primary mt-5">
-        Hello 😍🤟{" "}
+      <div className="flex items-center text-center font-semibold text-3xl text-primary mt-5 show w-max mx-auto">
+        <h1 className="mr-2">Hello </h1>
         <Typewriter
           options={{
             strings: [
@@ -35,7 +35,8 @@ export const NoUser = () => {
             cursor: "",
           }}
         />
-      </h1>
+        <h1 className="ml-2"> 😍🤟</h1>
+      </div>
 
       <p className="mt-4">
         By now i bet you have a catalogue of spotify playlists 🤨

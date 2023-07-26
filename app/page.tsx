@@ -38,7 +38,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
 
   return (
-    <main className="px-5 bg-gray-200">
+    <main className="px-5 bg-gray-200 min-h-screen">
       <Navbar setUser={setUser} />
       {user ? (
         <p className="text-3xl mt-5">
