@@ -2,10 +2,12 @@
 
 import { FeaturedPlaylists } from "@/types/featuredplaylists";
 import { Playlist, PlaylistPayload } from "@/types/playlists";
+import { AxiosError } from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast, Id } from "react-toastify";
 import { useAuthData } from "./useAuthData";
 import { useFetch } from "./useFetch";
+import { useUpdateLogger } from "./useUpdateLogger";
 
 const GlobalData = createContext<{
   personalPlaylists: PlaylistPayload | null;
@@ -15,11 +17,15 @@ const GlobalData = createContext<{
   isFetchingFeaturedPlaylists: boolean;
   fetchFeaturedPlaylists: () => Promise<FeaturedPlaylists | null>;
   fetchPersonalPlaylists: () => Promise<PlaylistPayload | null>;
+  personalPlaylistsError: AxiosError | null;
+  featuredPlaylistsError: AxiosError | null;
 }>({
   personalPlaylists: null,
   notify: () => {},
   isFetchingPersonalPlaylists: false,
   featuredPlaylists: null,
+  personalPlaylistsError: null,
+  featuredPlaylistsError: null,
   isFetchingFeaturedPlaylists: false,
   fetchFeaturedPlaylists: () => Promise.resolve<FeaturedPlaylists | null>(null),
   fetchPersonalPlaylists: () => Promise.resolve<PlaylistPayload | null>(null),
@@ -99,6 +105,8 @@ export const GlobalDataProvider = ({
         isFetchingPersonalPlaylists,
         fetchFeaturedPlaylists,
         fetchPersonalPlaylists,
+        featuredPlaylistsError,
+        personalPlaylistsError,
       }}
     >
       {children}

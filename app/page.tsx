@@ -1,5 +1,6 @@
 "use client";
 
+import { ErrorHandler } from "@/components/ErrorHandler";
 import { Navbar } from "@/components/Navbar";
 import { NoUser } from "@/components/NoUser";
 import { PlaylistsSkeleton } from "@/components/PlaylistsSkeleton";
@@ -29,6 +30,8 @@ export default function Home() {
     notify,
     isFetchingFeaturedPlaylists,
     featuredPlaylists,
+    featuredPlaylistsError,
+    personalPlaylistsError,
   } = useGlobalData();
 
   if (anErrorOccurred) {
@@ -50,23 +53,25 @@ export default function Home() {
 
       {isFetchingPersonalPlaylists ? (
         <PlaylistsSkeleton />
+      ) : personalPlaylistsError ? (
+        <ErrorHandler error={personalPlaylistsError} />
       ) : (
-        personalPlaylists && (
-          <div className="flex flex-wrap mt-5 gap-y-5 show">
-            {personalPlaylists?.items.map((playlist) => (
-              <PlaylistTab
-                playlist={playlist}
-                key={playlist.id}
-                type="personal"
-              />
-            ))}
-          </div>
-        )
+        <div className="flex flex-wrap mt-5 gap-y-5 show">
+          {personalPlaylists?.items.map((playlist) => (
+            <PlaylistTab
+              playlist={playlist}
+              key={playlist.id}
+              type="personal"
+            />
+          ))}
+        </div>
       )}
 
       <p className="text-3xl mt-5">{featuredPlaylists?.message}</p>
       {isFetchingFeaturedPlaylists ? (
         <PlaylistsSkeleton />
+      ) : featuredPlaylistsError ? (
+        <ErrorHandler error={featuredPlaylistsError} />
       ) : (
         featuredPlaylists && (
           <div className="flex flex-wrap mt-5 gap-y-5 show">

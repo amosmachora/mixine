@@ -7,6 +7,8 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { addUserToDb } from "@/firebase/firebase";
 import { Skeleton } from "./ui/skeleton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 export const handleLogin = async () => {
   window.location.href = "/api/spotify/login";
@@ -64,18 +66,25 @@ export const Navbar = ({
           </div>
         ) : (
           user && (
-            <div className="show text-black hidden sm:flex text-sm ">
+            <div className="show text-black hidden sm:flex text-sm items-center">
               <div>
                 <p>{user?.display_name}</p>
                 <p>{user?.email}</p>
               </div>
-              <Image
-                src={user?.images[0].url!}
-                alt={user?.display_name!}
-                height={user?.images[0].height}
-                width={user?.images[0].width}
-                className="object-cover rounded-full h-10 w-10 border-2 border-primary cursor-pointer ml-3"
-              />
+              {user.images.length > 0 ? (
+                <Image
+                  src={user?.images[0].url}
+                  alt={user?.display_name!}
+                  height={user?.images[0].height}
+                  width={user?.images[0].width}
+                  className="object-cover rounded-full h-10 w-10 border-2 border-primary cursor-pointer ml-3"
+                />
+              ) : (
+                <FontAwesomeIcon
+                  icon={faUser}
+                  className="object-cover rounded-full h-5 w-5 cursor-pointer ml-3"
+                />
+              )}
             </div>
           )
         )}
